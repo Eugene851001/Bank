@@ -33,4 +33,8 @@ export const UsersService = class {
             body: JSON.stringify(request)
         })
     }
+
+    public static DeleteUser(id: number) {
+        return fetch(`/api/users/${id}`, {method: 'DELETE'});
+    }
 }

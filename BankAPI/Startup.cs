@@ -12,6 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using System.Reflection;
+using Newtonsoft.Json;
+using BankAPI.DTO;
 
 namespace BankAPI
 {
@@ -27,9 +32,24 @@ namespace BankAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddFluentValidation(fv => 
+                {
+                    fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
+                    fv.RegisterValidatorsFromAssemblyContaining<UserValidator>();
+                //    fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+                })
+                .AddNewtonsoftJson(opt => 
+                {
+                    opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                });
 
-            services.AddSingleton<IBankContext, BankContext>();
+            //     services.
+            //     services.
+
+         //   services.AddDbContext<BankContext>();
+
+            services.AddScoped<IBankContext, BankContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,28 +8,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using BankDatabase;
+using BankAPI.Mappings;
 
 namespace BankAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController: ApiControllerBase
     {
-        private readonly IMapper mapper;
-        private readonly IBankContext db;
 
-        public UsersController(IBankContext db)
-        {
-            var config = new MapperConfiguration(c => c.CreateMap<User, UserDTO>());
-            this.mapper = new Mapper(config);
-            this.db = db;
-        }
+        public UsersController(IBankContext db): base(db) { }
 
         [HttpGet]
         public IActionResult GetUsers()
         {
-
-            UserDTO[] users = this.db.Users.Select(u => this.mapper.Map<UserDTO>(u)).ToArray();
+            UserDemo[] users = this.db.Users.Select(u => this.mapper.Map<UserDemo>(u)).ToArray();
             return Ok(users);
         }
 
@@ -47,21 +38,40 @@ namespace BankAPI.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
+        [HttpPut]
         public IActionResult UpdateUser([FromBody] UpdateUserRequest request)
         {
+            var newUser = this.mapper.Map<User>(request.Value);
             User user = GetById(request.Id);
+            
+            //primary key should not change
+            newUser.Id = user.Id;
 
-            user.Name = request.Value.Name;
+            foreach (var property in user.GetType().GetProperties())
+            {
+                property.SetValue(user, property.GetValue(newUser));
+            }
 
-            this.db.Save();
+            try
+            {
+                this.db.Save();
+            }
+            catch
+            {
+                return BadRequest("Passport number and id should be unique");
+            }
 
             return Ok();
         }
 
+        [Route("{id:int}")]
         [HttpDelete]
         public IActionResult DeleteUser(int id)
         {
+            var user = GetById(id);
+
+            this.db.Users.Remove(user);
+            this.db.Save();
 
             return Ok();
         }
@@ -70,6 +80,10 @@ namespace BankAPI.Controllers
         [HttpPost]
         public IActionResult CreateUser([FromBody] UserDTO user)
         {
+            var dbUser = this.mapper.Map<User>(user);
+            this.db.Users.Add(dbUser);
+            this.db.Save();
+
             return Ok();
         }
 

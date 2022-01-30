@@ -21,7 +21,7 @@ export const Users = () => {
     return users ? (
         <>
             <ul>
-                {(users as UserDemo[]).map(u => <li key={u.id}><User {...u}/></li>)}
+                {(users as UserDemo[]).map(u => <User key={u.id} {...u}/>)}
             </ul>
             <Link to="/users/create">Add user</Link>
         </>) : <p>Loading...</p>;

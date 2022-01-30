@@ -4,7 +4,11 @@ import { Constants } from '../Contants/Constants';
 import { UserDTO } from '../Models/UserDTO';
 import { UsersService } from '../Services/UsersService';
 import { nameOf } from '../utils/NameOf';
+import { CommonDropdown } from './CommonDropdown';
+import { SelectableItemsService } from '../Services/SelectableItemsService';
 import './UserDetailsView.style.css';
+import { MaritalStatusesDropdown } from './MaritalStatuses';
+import { CountriesDropdown } from './CountriesDropdown';
 
 export interface IUserDetailsViewProps {
     data?: UserDTO;
@@ -42,6 +46,36 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         return true;
     }
 
+    const isValidData = () => {
+        const namePattern = /^[a-zA-ZА-Яа-я]+$/
+
+        if (!user.name.match(namePattern) || !user.surname.match(namePattern) || !user.lastname.match(namePattern)) {
+            alert('ФИО должно содержать только буквы');
+            return false;
+        }
+
+        const phonePattern = /^[0-9]{7}$/;
+
+        if (user.mobilePhone && !user.mobilePhone.match(phonePattern)) {
+            alert('Мобильнйы телефон должен быть из 7 цифр')
+            return false;
+        }
+
+        if (user.residenceAddress.length == 0) {
+            alert('Адресс проживания явялется обязательным');
+            return false;
+        }
+
+        const emailPattern = /[a-zA-Z.-]\@/;
+
+        if (user.email && !user.email.match(emailPattern)) {
+            alert('Проверьте email');
+            return false;
+        }
+
+        return true;
+    }
+
     const onUpdate = async (e: any) => {
 
         if (props.userId && isValidForm()) {
@@ -52,8 +86,9 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
     }
 
     const onCreate = async (e: any) => {
-        if (isValidForm()) {
-            e.preventDefault();
+        e.preventDefault();
+
+        if (isValidData()) {
             await UsersService.addUser(user);
             alert('User has been added');
         }
@@ -64,10 +99,12 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         return value.toISOString?.().substring(0, 10);
     }
 
+    const namePatter = '[a-zA-ZА-Яа-я]+'
+
     const fields: {label: string, element: JSX.Element}[] = [
         {
             label: 'Имя', 
-            element: <input type="text" defaultValue={user.name} onChange={(e) => onChange(e, nameOf<UserDTO>('name'))}/>
+            element: <input type="text" defaultValue={user.name} required pattern={namePatter} onChange={(e) => onChange(e, nameOf<UserDTO>('name'))}/>
         }, 
         {
             label: 'Отчество',
@@ -87,7 +124,7 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         },
         {
             label: 'Серия паспорта',
-            element: <input type="text" value={user.passportSeries} onChange={(e) => onChange(e, nameOf<UserDTO>('passportSeries'))}/>,
+            element: <input type="text" value={user.passportSeries} pattern='[A-Z]{2}' onChange={(e) => onChange(e, nameOf<UserDTO>('passportSeries'))}/>,
         },
         {
             label: 'Номер паспорта',
@@ -111,7 +148,8 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         },
         {
             label: 'Город проживания',
-            element: <input type="number" value={user.residenceCity} onChange={(e) => onChange(e, nameOf<UserDTO>('residenceCity'))}/>
+            element: <CommonDropdown selectedId={user.residenceCity} loadItems={SelectableItemsService.getCities} onChange={(e) => onChange(e, nameOf<UserDTO>('residenceCity'))}/>
+
         },
         {
             label: 'Адресс проживания',
@@ -119,11 +157,11 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         },
         {
             label: 'Семейный статус',
-            element: <input type="number" value={user.maritalStatus} onChange={(e) => onChange(e, nameOf<UserDTO>('maritalStatus'))}/>
+            element: <MaritalStatusesDropdown selectedId={user.maritalStatus} onChange={(e) => onChange(e, nameOf<UserDTO>('maritalStatus'))}/>
         },
         {
             label: 'Гражданство',
-            element: <input type="number" value={user.citizenship} onChange={(e) => onChange(e,  nameOf<UserDTO>('citizenship'))}/> 
+            element: <CountriesDropdown selectedId={user.citizenship} onChange={(e) => onChange(e, nameOf<UserDTO>('citizenship'))}/>
         },
         {
             label: 'Инвалидность',
@@ -140,6 +178,18 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         {
             label: 'Служил?',
             element: <input type="checkbox" checked={user.isConscripted} value='Is conscripted' onChange={() => toggleCheckbox(nameOf<UserDTO>('isConscripted'))}/>
+        },
+        {
+            label: 'Мобильный телефон',
+            element: <input type="number" value={user.mobilePhone} onChange={(e) => onChange(e, nameOf<UserDTO>('mobilePhone'))}/>
+        },
+        {
+            label: 'Домашний телефон',
+            element: <input type="number" value={user.homePhone} onChange={(e) => onChange(e, nameOf<UserDTO>('homePhone'))}/>
+        },
+        {
+            label: 'Email',
+            element: <input type="text" value={user.email} onChange={(e) => onChange(e, nameOf<UserDTO>('email'))}/>
         }
     ];
 

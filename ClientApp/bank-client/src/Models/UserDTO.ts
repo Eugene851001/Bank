@@ -16,6 +16,9 @@ export interface UserDTO {
     citizenship: number;
     disability: number;
     isRetiree: boolean;
-    monthlyIncome: number;
+    monthlyIncome?: number;
     isConscripted: boolean;
+    homePhone?: string;
+    mobilePhone?: string;
+    email?: string;
 }
