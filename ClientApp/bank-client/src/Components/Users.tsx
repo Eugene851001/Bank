@@ -3,6 +3,7 @@ import { UserDemo } from '../Models/UserDemo';
 import { User } from './User';
 import { UsersService } from '../Services/UsersService';
 import { Link } from 'react-router-dom';
+import './Users.css'
 
 export const Users = () => {
  
@@ -19,10 +20,12 @@ export const Users = () => {
     }, []);
 
     return users ? (
-        <>
-            <ul>
+        <div className='page-content'>
+            <h1>Список пользователей</h1>
+            <table className='users-table'>
+                <tr><th>Фамилия</th><th>Отчество</th><th>Имя</th><th></th><th></th></tr>
                 {(users as UserDemo[]).map(u => <User key={u.id} {...u}/>)}
-            </ul>
-            <Link to="/users/create">Add user</Link>
-        </>) : <p>Loading...</p>;
+            </table>
+            <Link to="/users/create">Добавить пользователя</Link>
+        </div>) : <p>Loading...</p>;
 }

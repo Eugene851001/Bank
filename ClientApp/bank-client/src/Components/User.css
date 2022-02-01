@@ -6,3 +6,19 @@
 .user > * {
     margin: 10px
 }
+
+.delete-button {
+    background-color: #b31818;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    border-radius: 10%;
+}
+
+.delete-button:hover {
+    cursor: pointer;
+}

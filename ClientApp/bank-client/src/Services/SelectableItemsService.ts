@@ -14,6 +14,10 @@ export class SelectableItemsService {
         return SelectableItemsService.getSelectableItems('MaritalStatuses');
     }
 
+    public static getDisabilities(): Promise<SelectableItemDTO[]> {
+        return SelectableItemsService.getSelectableItems('disabilities');
+    }
+
     private static getSelectableItems(controller: string) {
         return fetch(`/api/${controller}`).then(response => response.json());
     }

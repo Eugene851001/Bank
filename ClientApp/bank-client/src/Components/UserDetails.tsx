@@ -19,8 +19,8 @@ export const UserDetails = () => {
         async function loadData() {
             if (userId) {  
                 const response = await UsersService.getUser(+userId);
-            
-                setUser(response);
+
+                setUser({...response, birthDate: new Date(response.birthDate), issuedDate: new Date(response.issuedDate)});
             }
 
             setLoaded(true);

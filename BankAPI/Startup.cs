@@ -44,11 +44,6 @@ namespace BankAPI
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
-            //     services.
-            //     services.
-
-         //   services.AddDbContext<BankContext>();
-
             services.AddScoped<IBankContext, BankContext>();
         }
 

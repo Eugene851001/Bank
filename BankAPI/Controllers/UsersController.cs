@@ -20,7 +20,11 @@ namespace BankAPI.Controllers
         [HttpGet]
         public IActionResult GetUsers()
         {
-            UserDemo[] users = this.db.Users.Select(u => this.mapper.Map<UserDemo>(u)).ToArray();
+            UserDemo[] users = this.db.Users
+                .OrderBy(u => u.Lastname)
+                .Select(u => this.mapper.Map<UserDemo>(u))
+                .ToArray();
+
             return Ok(users);
         }
 
@@ -47,19 +51,28 @@ namespace BankAPI.Controllers
             //primary key should not change
             newUser.Id = user.Id;
 
+            if (this.db.Users.Any(u => u.PassportNumber == user.PassportNumber))
+            {
+                return BadRequest(new ErrorDTO()
+                {
+                    Message = $"There is already passport with number {user.PassportNumber}"
+                });
+            }
+
+            if (this.db.Users.Any(u => u.PassportId == user.PassportId))
+            {
+                return BadRequest(new ErrorDTO()
+                {
+                    Message = $"There is already user with passport id {user.PassportId}"
+                });
+            }
+
             foreach (var property in user.GetType().GetProperties())
             {
                 property.SetValue(user, property.GetValue(newUser));
             }
 
-            try
-            {
-                this.db.Save();
-            }
-            catch
-            {
-                return BadRequest("Passport number and id should be unique");
-            }
+            this.db.Save();
 
             return Ok();
         }
@@ -82,6 +95,23 @@ namespace BankAPI.Controllers
         {
             var dbUser = this.mapper.Map<User>(user);
             this.db.Users.Add(dbUser);
+
+            if (this.db.Users.Any(u => u.PassportNumber == user.PassportNumber))
+            {
+                return BadRequest(new ErrorDTO() 
+                { 
+                    Message = $"There is already passport with number {user.PassportNumber}" 
+                });
+            }
+
+            if (this.db.Users.Any(u => u.PassportId == user.PassportId))
+            {
+                return BadRequest(new ErrorDTO()
+                {
+                    Message = $"There is already user with passport id {user.PassportId}"
+                });
+            }
+
             this.db.Save();
 
             return Ok();

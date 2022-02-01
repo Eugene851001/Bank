@@ -1,3 +1,5 @@
+import { AddUserResponse } from "../Models/AddUserResponse";
+import { ErrorDTO } from "../Models/ErrorDTO";
 import { UpdateUserRequest } from "../Models/UpdateUserRequest";
 import { UserDemo } from "../Models/UserDemo";
 import { UserDTO } from "../Models/UserDTO";
@@ -12,7 +14,7 @@ export const UsersService = class {
         return fetch(`/api/Users/${id}`).then(response => response.json());
     }
 
-    public static addUser(user: UserDTO) {
+    public static addUser(user: UserDTO){
         return fetch('/api/users', {
             method: 'POST', 
             headers: {

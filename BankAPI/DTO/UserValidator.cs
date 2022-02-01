@@ -38,7 +38,17 @@ namespace BankAPI.DTO
             RuleFor(u => u.MobilePhone)
                 .Matches(new Regex(@"^\d{7}&"));
 
-            
+            RuleFor(u => u.BirthPlace)
+                .NotNull()
+                .NotEmpty();
+
+            RuleFor(u => u.ResidenceAddress)
+                .NotNull()
+                .NotEmpty();
+
+            RuleFor(u => u.IssuedBy)
+                .NotNull()
+                .NotEmpty();
 
             RuleFor(u => u.Email)
                 .EmailAddress();

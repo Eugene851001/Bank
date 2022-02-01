@@ -17,6 +17,8 @@ namespace BankAPI.Mappings
             CreateMap<MaritalStatus, SelectableItemDTO>();
 
             CreateMap<Country, SelectableItemDTO>();
+
+            CreateMap<Disability, SelectableItemDTO>();
         }
     }
 }

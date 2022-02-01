@@ -20,11 +20,21 @@ export const User = (props: UserProps) => {
     }
 
     return !isDeleted ? 
-    <li>    
-        <div className='user'>
-            <Link to={`/users/${props.id}`}><p>{props.name} {props.surname} {props.lastname}</p></Link> 
-            <button onClick={onDelete}>Удалить</button>
-        </div>    
-    </li>
-        : null;
+        <tr>    
+            <td>
+                {props.lastname}
+            </td>
+            <td>
+                {props.surname}
+            </td>
+            <td>
+                {props.name}
+            </td>
+            <td>
+                <Link to={`/users/${props.id}`}><p>Редактировать</p></Link> 
+            </td>
+            <td>
+                <button className='delete-button' onClick={onDelete}>Удалить</button>
+            </td>
+        </tr> : null;
 }

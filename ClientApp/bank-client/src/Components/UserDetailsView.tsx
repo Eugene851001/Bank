@@ -9,6 +9,8 @@ import { SelectableItemsService } from '../Services/SelectableItemsService';
 import './UserDetailsView.style.css';
 import { MaritalStatusesDropdown } from './MaritalStatuses';
 import { CountriesDropdown } from './CountriesDropdown';
+import { ErrorDTO } from '../Models/ErrorDTO';
+import { DisabilitiesDropdown } from './DisabilitiesDropdown';
 
 export interface IUserDetailsViewProps {
     data?: UserDTO;
@@ -50,7 +52,7 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         const namePattern = /^[a-zA-ZА-Яа-я]+$/
 
         if (!user.name.match(namePattern) || !user.surname.match(namePattern) || !user.lastname.match(namePattern)) {
-            alert('ФИО должно содержать только буквы');
+            alert('ФИО обязательно и должно содержать только буквы');
             return false;
         }
 
@@ -61,11 +63,6 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
             return false;
         }
 
-        if (user.residenceAddress.length == 0) {
-            alert('Адресс проживания явялется обязательным');
-            return false;
-        }
-
         const emailPattern = /[a-zA-Z.-]\@/;
 
         if (user.email && !user.email.match(emailPattern)) {
@@ -73,15 +70,56 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
             return false;
         }
 
+        const passportSeriesPattern = /^[A-Z]{2}$/;
+
+        if (!user.passportSeries || !user.passportSeries.match(passportSeriesPattern)) {
+            alert('Неверный формат серии паспорта');
+            return false;
+        }
+
+        const passportNumberPattern = /^\d{7}$/;
+        if (!user.passportNumber || !user.passportNumber.match(passportNumberPattern)) {
+            alert('Неверный формат номера паспорта');
+            return false;
+        }
+
+        const passportIdPattern = /^\d{14}$/;
+        if (!user.passportId || !user.passportId.match(passportIdPattern)) {
+            alert('Неверный формат ид. номера паспорта');
+            return false;
+        }
+
+        const checkRequired = (value: string) => value && value.length > 0; 
+
+        if (!checkRequired(user.birthPlace)) {
+            alert('Место рождения является обязательным');
+            return false;
+        }
+
+        if (!checkRequired(user.issuedBy)) {
+            alert('Поле "Кем выдан" явялется обязательным');
+            return false;
+        }
+
+        if (!checkRequired(user.residenceAddress)) {
+            alert('Адресс проживания является обязательным');
+            return false;
+        }
+ 
         return true;
     }
 
     const onUpdate = async (e: any) => {
+        e.preventDefault();
 
-        if (props.userId && isValidForm()) {
-            e.preventDefault();
-            await UsersService.updateUser({id: props.userId, value: user});
-            alert('User has been updated');
+        if (props.userId && isValidData()) {
+            const response = await UsersService.updateUser({id: props.userId, value: user});
+            if (response.status != 200) {
+                const errorInfo = await response.json();
+                alert(`Error while updating user: ${errorInfo.message}`);
+            } else {
+                alert('User has been updated');
+            }
         }
     }
 
@@ -89,8 +127,13 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         e.preventDefault();
 
         if (isValidData()) {
-            await UsersService.addUser(user);
-            alert('User has been added');
+            const response = await UsersService.addUser(user);
+            if (response.status != 200) {
+                const errorInfo = await response.json();
+                alert(`Error while adding user: ${errorInfo.message}`);
+            } else {
+                alert('User has been added');
+            }
         }
     }
 
@@ -99,76 +142,91 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         return value.toISOString?.().substring(0, 10);
     }
 
-    const namePatter = '[a-zA-ZА-Яа-я]+'
 
-    const fields: {label: string, element: JSX.Element}[] = [
+    const fields: {label: string, required?: boolean, element: JSX.Element}[] = [
         {
             label: 'Имя', 
-            element: <input type="text" defaultValue={user.name} required pattern={namePatter} onChange={(e) => onChange(e, nameOf<UserDTO>('name'))}/>
+            required: true,
+            element: <input type="text" defaultValue={user.name} required onChange={(e) => onChange(e, nameOf<UserDTO>('name'))}/>
         }, 
         {
             label: 'Отчество',
+            required: true,
             element: <input type="text" value={user.surname} required onChange={(e) => onChange(e, nameOf<UserDTO>('surname'))}/>
         },
         {
             label: 'Фамилия',
+            required: true,
             element: <input type="text" value={user.lastname} required onChange={(e) => onChange(e, nameOf<UserDTO>('lastname'))}/>
         },
         {
             label: 'Дата рождения',
+            required: true,
             element:  <input type="date" value={dateFormat(user.birthDate)} required onChange={(e) => onChangeDate(e, nameOf<UserDTO>('birthDate'))}/>
         },
         {
             label: 'Есть y-хромосома?',
+            required: true,
             element: <input type="checkbox" checked={user.sex} value={'Sex'} onChange={() => toggleCheckbox(nameOf<UserDTO>('sex'))}/>
         },
         {
             label: 'Серия паспорта',
+            required: true,
             element: <input type="text" value={user.passportSeries} pattern='[A-Z]{2}' onChange={(e) => onChange(e, nameOf<UserDTO>('passportSeries'))}/>,
         },
         {
             label: 'Номер паспорта',
+            required: true,
             element: <input type="text" value={user.passportNumber} onChange={(e) => onChange(e, nameOf<UserDTO>('passportNumber'))}/>
         },
         {
             label: 'Кем выдан',
+            required: true,
             element: <input type="text" value={user.issuedBy} onChange={(e) => onChange(e, nameOf<UserDTO>('issuedBy'))}/>
         }, 
         {
             label: 'Дата выдачи',
+            required: true,
             element: <input type="date" value={dateFormat(user.issuedDate)} onChange={(e) => onChange(e, nameOf<UserDTO>('issuedDate'))}/>
         },
         {
             label: 'Ид. номер',
+            required: true,
             element: <input type="text" value={user.passportId} onChange={(e) => onChange(e, nameOf<UserDTO>('passportId'))}/>
         },
         {
             label: 'Место рождения',
+            required: true,
             element: <input type="text" value={user.birthPlace} required onChange={(e) => onChange(e, nameOf<UserDTO>('birthPlace'))}/>
         },
         {
             label: 'Город проживания',
+            required: true,
             element: <CommonDropdown selectedId={user.residenceCity} loadItems={SelectableItemsService.getCities} onChange={(e) => onChange(e, nameOf<UserDTO>('residenceCity'))}/>
-
         },
         {
             label: 'Адресс проживания',
+            required: true,
             element: <input type="text" value={user.residenceAddress} onChange={(e) => onChange(e, nameOf<UserDTO>('residenceAddress'))}/>
         },
         {
             label: 'Семейный статус',
+            required: true,
             element: <MaritalStatusesDropdown selectedId={user.maritalStatus} onChange={(e) => onChange(e, nameOf<UserDTO>('maritalStatus'))}/>
         },
         {
             label: 'Гражданство',
+            required: true,
             element: <CountriesDropdown selectedId={user.citizenship} onChange={(e) => onChange(e, nameOf<UserDTO>('citizenship'))}/>
         },
         {
             label: 'Инвалидность',
-            element: <input type="number" value={user.disability} onChange={(e) => onChange(e, nameOf<UserDTO>('disability'))}/>
+            required: true,
+            element: <DisabilitiesDropdown selectedId={user.disability} onChange={(e) => onChange(e, nameOf<UserDTO>('disability'))}/>
         },
         {
             label: 'Пенсионер?',
+            required: true,
             element: <input type="checkbox" value='Is retiree' checked={user.isRetiree} onChange={() => toggleCheckbox(nameOf<UserDTO>('isRetiree'))}/>
         },
         {
@@ -177,6 +235,7 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         },
         {
             label: 'Служил?',
+            required: true,
             element: <input type="checkbox" checked={user.isConscripted} value='Is conscripted' onChange={() => toggleCheckbox(nameOf<UserDTO>('isConscripted'))}/>
         },
         {
@@ -197,12 +256,14 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         <>
             <Link to="/">Список пользователей</Link>
             <form id="user-form" className='main-form'>
-                {fields.map(f => 
-                    <div>
-                        <p>{f.label}</p>
-                        {f.element}
-                    </div>)}
-                {props.userId ? <input type='submit' value='Update' onClick={onUpdate}/> : <input type="submit" value='Create' onClick={onCreate}/>}
+                <table>
+                    {fields.map(f => 
+                        <tr>
+                            <td>{f.label}</td>
+                            <td className={f.required ? 'required' : ''}>{f.element}</td>
+                        </tr>)}
+                </table>
+                {props.userId ? <input type='submit' value='Update' className='submit-button' onClick={onUpdate}/> : <input type="submit" className='submit-button' value='Create' onClick={onCreate}/>}
             </form>
         </>
     );

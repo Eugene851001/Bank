@@ -18,7 +18,7 @@ namespace BankDatabase
         public string IssuedBy { get; set; }
         public DateTime IssuedDate { get; set; }
         public string PassportId { get; set; }
-        public string BirthPlace { get; set; }
+        public string BirthPlace { get; set; } 
         public int ResidenceCity { get; set; }
         public string ResidenceAddress { get; set; }
         public string HomePhone { get; set; }
