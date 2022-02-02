@@ -11,6 +11,7 @@ import { MaritalStatusesDropdown } from './MaritalStatuses';
 import { CountriesDropdown } from './CountriesDropdown';
 import { ErrorDTO } from '../Models/ErrorDTO';
 import { DisabilitiesDropdown } from './DisabilitiesDropdown';
+import { SexDropdown } from './SexDropown';
 
 export interface IUserDetailsViewProps {
     data?: UserDTO;
@@ -35,6 +36,12 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         const value = new Date(e.target.value);
 
         setUser({...user, [property]: value});
+    }
+
+    const onChangeSex = (e: any) => {
+        const value = e.target.value;
+
+        user.sex = value == 0 ? false : true;
     }
 
     const isValidForm = () => {
@@ -165,9 +172,9 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
             element:  <input type="date" value={dateFormat(user.birthDate)} required onChange={(e) => onChangeDate(e, nameOf<UserDTO>('birthDate'))}/>
         },
         {
-            label: 'Есть y-хромосома?',
+            label: 'Пол',
             required: true,
-            element: <input type="checkbox" checked={user.sex} value={'Sex'} onChange={() => toggleCheckbox(nameOf<UserDTO>('sex'))}/>
+            element:  <SexDropdown selectedId={user.sex ? 1 : 0} onChange={(e) => onChangeSex(e)}/> //<input type="checkbox" checked={user.sex} value={'Sex'} onChange={() => toggleCheckbox(nameOf<UserDTO>('sex'))}/>
         },
         {
             label: 'Серия паспорта',

@@ -51,21 +51,21 @@ namespace BankAPI.Controllers
             //primary key should not change
             newUser.Id = user.Id;
 
-            if (this.db.Users.Any(u => u.PassportNumber == user.PassportNumber))
-            {
-                return BadRequest(new ErrorDTO()
-                {
-                    Message = $"There is already passport with number {user.PassportNumber}"
-                });
-            }
+            //if (this.db.Users.Any(u => u.PassportNumber == user.PassportNumber))
+            //{
+            //    return BadRequest(new ErrorDTO()
+            //    {
+            //        Message = $"There is already passport with number {user.PassportNumber}"
+            //    });
+            //}
 
-            if (this.db.Users.Any(u => u.PassportId == user.PassportId))
-            {
-                return BadRequest(new ErrorDTO()
-                {
-                    Message = $"There is already user with passport id {user.PassportId}"
-                });
-            }
+            //if (this.db.Users.Any(u => u.PassportId == user.PassportId))
+            //{
+            //    return BadRequest(new ErrorDTO()
+            //    {
+            //        Message = $"There is already user with passport id {user.PassportId}"
+            //    });
+            //}
 
             foreach (var property in user.GetType().GetProperties())
             {
