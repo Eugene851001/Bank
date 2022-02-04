@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { SelectableItemDTO } from '../Models/SelectableItemDTO';
-import { SelectableItemsService } from '../Services/SelectableItemsService';
+import { SelectableItemDTO } from '../../Models/SelectableItemDTO';
+import { SelectableItemsService } from '../../Services/SelectableItemsService';
 import { DropdownView } from './DropdownView';
 import { IDropdownProps } from './IDropdownProps';
 

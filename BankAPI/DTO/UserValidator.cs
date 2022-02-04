@@ -33,10 +33,7 @@ namespace BankAPI.DTO
 
             RuleFor(u => u.PassportId)
                 .NotNull()
-                .Matches(new Regex(@"^\d{14}"));
-
-            RuleFor(u => u.MobilePhone)
-                .Matches(new Regex(@"^\d{7}&"));
+                .Matches(new Regex(@"^\w{14}"));
 
             RuleFor(u => u.BirthPlace)
                 .NotNull()
@@ -50,8 +47,8 @@ namespace BankAPI.DTO
                 .NotNull()
                 .NotEmpty();
 
-            RuleFor(u => u.Email)
-                .EmailAddress();
+            //RuleFor(u => u.Email)
+            //    .EmailAddress();
         }
 
         private static bool IsValidName(string name)
@@ -59,6 +56,30 @@ namespace BankAPI.DTO
             var regex = new Regex(@"^[a-zA-ZА-Яа-я]+$");
 
             return regex.IsMatch(name);
+        }
+
+        private static bool IsvalidMobilePhone(string phone)
+        {
+            if (string.IsNullOrEmpty(phone))
+            {
+                return true;
+            }
+
+            var regex = new Regex(@"^\d{9}&");
+
+            return regex.IsMatch(phone);
+        }
+
+        private static bool IsvalidMobPhone(string phone)
+        {
+            if (string.IsNullOrEmpty(phone))
+            {
+                return true;
+            }
+
+            var regex = new Regex(@"^\d{9}&");
+
+            return regex.IsMatch(phone);
         }
     }
 }

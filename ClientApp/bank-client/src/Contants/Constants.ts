@@ -1,3 +1,4 @@
+import { CreateContractRequest } from "../Models/CreateContractRequest"
 import { UserDTO } from "../Models/UserDTO"
 
 export const Constants = class {
@@ -26,4 +27,20 @@ export const Constants = class {
             }
         }
     } 
+
+    public static Contracts = class {
+        public static get newItem(): CreateContractRequest {
+            return {
+                user: 1,
+                accountNumber: '',
+                accountCode: '',
+                startDate: new Date(),
+                endDate: new Date(),
+                sum: 10,
+                percent: 0,
+                currency: 1,
+                depositType: 1,
+            }
+        }
+    }
 }

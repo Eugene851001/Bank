@@ -51,28 +51,28 @@ namespace BankAPI.Controllers
             //primary key should not change
             newUser.Id = user.Id;
 
-            //if (this.db.Users.Any(u => u.PassportNumber == user.PassportNumber))
-            //{
-            //    return BadRequest(new ErrorDTO()
-            //    {
-            //        Message = $"There is already passport with number {user.PassportNumber}"
-            //    });
-            //}
+            if (this.db.Users.Any(u => u.PassportNumber == newUser.PassportNumber && u.Id != request.Id))
+            {
+                return BadRequest(new ErrorDTO()
+                {
+                    Message = $"There is already passport with number {user.PassportNumber}"
+                });
+            }
 
-            //if (this.db.Users.Any(u => u.PassportId == user.PassportId))
-            //{
-            //    return BadRequest(new ErrorDTO()
-            //    {
-            //        Message = $"There is already user with passport id {user.PassportId}"
-            //    });
-            //}
+            if (this.db.Users.Any(u => u.PassportId == newUser.PassportId && u.Id != request.Id))
+            {
+                return BadRequest(new ErrorDTO()
+                {
+                    Message = $"There is already user with passport id {user.PassportId}"
+                });
+            }
 
             foreach (var property in user.GetType().GetProperties())
             {
                 property.SetValue(user, property.GetValue(newUser));
             }
 
-            this.db.Save();
+            this.db.SaveChanges();
 
             return Ok();
         }
@@ -84,7 +84,7 @@ namespace BankAPI.Controllers
             var user = GetById(id);
 
             this.db.Users.Remove(user);
-            this.db.Save();
+            this.db.SaveChanges();
 
             return Ok();
         }
@@ -112,7 +112,7 @@ namespace BankAPI.Controllers
                 });
             }
 
-            this.db.Save();
+            this.db.SaveChanges();
 
             return Ok();
         }

@@ -1,4 +1,4 @@
-import { SelectableItemDTO } from "../Models/SelectableItemDTO";
+import { SelectableItemDTO } from "../../Models/SelectableItemDTO";
 
 export interface IDropdownProps {
     selectedId: number;

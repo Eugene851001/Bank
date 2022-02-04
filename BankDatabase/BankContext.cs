@@ -17,16 +17,16 @@ namespace BankDatabase
         {
         }
 
+        public virtual DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<AccountsType> AccountsTypes { get; set; }
         public virtual DbSet<City> Cities { get; set; }
+        public virtual DbSet<Contract> Contracts { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<Currency> Currencies { get; set; }
+        public virtual DbSet<DepositType> DepositTypes { get; set; }
         public virtual DbSet<Disability> Disabilities { get; set; }
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
         public virtual DbSet<User> Users { get; set; }
-
-        public int Save()
-        {
-            return SaveChanges();
-        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,12 +41,102 @@ namespace BankDatabase
         {
             modelBuilder.HasAnnotation("Relational:Collation", "Cyrillic_General_CI_AS");
 
+            modelBuilder.Entity<Account>(entity =>
+            {
+                entity.HasIndex(e => e.AccountType, "IXFK_Accounts_AccountsTypes");
+
+                entity.HasIndex(e => e.Contract, "IXFK_Accounts_Contracts");
+
+                entity.HasIndex(e => e.Currency, "IXFK_Accounts_Currencies");
+
+                entity.HasIndex(e => e.Owner, "IXFK_Accounts_Users");
+
+                entity.Property(e => e.Balance).HasColumnType("money");
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Credit).HasColumnType("money");
+
+                entity.Property(e => e.Debit).HasColumnType("money");
+
+                entity.Property(e => e.Number)
+                    .IsRequired()
+                    .HasMaxLength(13)
+                    .IsUnicode(false)
+                    .IsFixedLength(true);
+
+                entity.HasOne(d => d.AccountTypeNavigation)
+                    .WithMany(p => p.Accounts)
+                    .HasForeignKey(d => d.AccountType)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Accounts_AccountsTypes");
+
+                entity.HasOne(d => d.ContractNavigation)
+                    .WithMany(p => p.Accounts)
+                    .HasForeignKey(d => d.Contract)
+                    .HasConstraintName("FK_Accounts_Contracts");
+
+                entity.HasOne(d => d.CurrencyNavigation)
+                    .WithMany(p => p.Accounts)
+                    .HasForeignKey(d => d.Currency)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Accounts_Currencies");
+
+                entity.HasOne(d => d.OwnerNavigation)
+                    .WithMany(p => p.Accounts)
+                    .HasForeignKey(d => d.Owner)
+                    .HasConstraintName("FK_Accounts_Users");
+            });
+
+            modelBuilder.Entity<AccountsType>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(4)
+                    .IsUnicode(false)
+                    .IsFixedLength(true);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<City>(entity =>
             {
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Contract>(entity =>
+            {
+                entity.HasIndex(e => e.Currency, "IXFK_Contracts_Currencies");
+
+                entity.HasIndex(e => e.DepositType, "IXFK_Contracts_DepositTypes");
+
+                entity.Property(e => e.EndDate).HasColumnType("date");
+
+                entity.Property(e => e.StartDate).HasColumnType("date");
+
+                entity.Property(e => e.Sum).HasColumnType("money");
+
+                entity.HasOne(d => d.CurrencyNavigation)
+                    .WithMany(p => p.Contracts)
+                    .HasForeignKey(d => d.Currency)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Contracts_Currencies");
+
+                entity.HasOne(d => d.DepositTypeNavigation)
+                    .WithMany(p => p.Contracts)
+                    .HasForeignKey(d => d.DepositType)
+                    .HasConstraintName("FK_Contracts_DepositTypes");
             });
 
             modelBuilder.Entity<Country>(entity =>
@@ -57,6 +147,17 @@ namespace BankDatabase
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Currency>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(3)
+                    .IsUnicode(false)
+                    .IsFixedLength(true);
             });
 
             modelBuilder.Entity<Disability>(entity =>
@@ -72,6 +173,7 @@ namespace BankDatabase
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });
@@ -85,6 +187,12 @@ namespace BankDatabase
                 entity.HasIndex(e => e.Disability, "IXFK_Users_Disabilities");
 
                 entity.HasIndex(e => e.MaritalStatus, "IXFK_Users_MaritalStatuses");
+
+                entity.HasIndex(e => e.PassportId, "UNQ_PassportId")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.PassportNumber, "UNQ_PassportNumber")
+                    .IsUnique();
 
                 entity.Property(e => e.BirthDate).HasColumnType("date");
 

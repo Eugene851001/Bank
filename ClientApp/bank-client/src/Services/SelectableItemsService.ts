@@ -18,8 +18,11 @@ export class SelectableItemsService {
         return SelectableItemsService.getSelectableItems('disabilities');
     }
 
+    public static getCurrencies(): Promise<SelectableItemDTO[]> {
+        return SelectableItemsService.getSelectableItems('currencies');
+    }
+
     private static getSelectableItems(controller: string) {
         return fetch(`/api/${controller}`).then(response => response.json());
     }
-
 }

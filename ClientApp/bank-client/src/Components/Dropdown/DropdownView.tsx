@@ -1,5 +1,5 @@
 import React from 'react';
-import { SelectableItemDTO } from '../Models/SelectableItemDTO';
+import { SelectableItemDTO } from '../../Models/SelectableItemDTO';
 
 export interface IDropdownViewProps {
     onChange?: (e: any) => void;

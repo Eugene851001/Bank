@@ -22,6 +22,8 @@ namespace BankAPI.Controllers
             {
                 cnf.AddProfile<UsersProfile>();
                 cnf.AddProfile<SelectableItemsProfile>();
+                cnf.AddProfile<ContractsProfile>();
+                cnf.AddProfile<AccountsProfile>();
             });
 
             this.mapper = new Mapper(config);

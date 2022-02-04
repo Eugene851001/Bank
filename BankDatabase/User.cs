@@ -7,6 +7,11 @@ namespace BankDatabase
 {
     public partial class User
     {
+        public User()
+        {
+            Accounts = new HashSet<Account>();
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
@@ -18,7 +23,7 @@ namespace BankDatabase
         public string IssuedBy { get; set; }
         public DateTime IssuedDate { get; set; }
         public string PassportId { get; set; }
-        public string BirthPlace { get; set; } 
+        public string BirthPlace { get; set; }
         public int ResidenceCity { get; set; }
         public string ResidenceAddress { get; set; }
         public string HomePhone { get; set; }
@@ -35,5 +40,6 @@ namespace BankDatabase
         public virtual Disability DisabilityNavigation { get; set; }
         public virtual MaritalStatus MaritalStatusNavigation { get; set; }
         public virtual City ResidenceCityNavigation { get; set; }
+        public virtual ICollection<Account> Accounts { get; set; }
     }
 }

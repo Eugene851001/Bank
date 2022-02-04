@@ -27,5 +27,7 @@ export const Users = () => {
                 {(users as UserDemo[]).map(u => <User key={u.id} {...u}/>)}
             </table>
             <Link to="/users/create">Добавить пользователя</Link>
+            <Link to="/accounts">Счета</Link>
+            <Link to="/contracts">Оформить договор</Link>
         </div>) : <p>Loading...</p>;
 }

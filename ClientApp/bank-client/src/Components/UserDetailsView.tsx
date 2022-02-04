@@ -4,14 +4,16 @@ import { Constants } from '../Contants/Constants';
 import { UserDTO } from '../Models/UserDTO';
 import { UsersService } from '../Services/UsersService';
 import { nameOf } from '../utils/NameOf';
-import { CommonDropdown } from './CommonDropdown';
+import { CommonDropdown } from './Dropdown/CommonDropdown';
 import { SelectableItemsService } from '../Services/SelectableItemsService';
 import './UserDetailsView.style.css';
-import { MaritalStatusesDropdown } from './MaritalStatuses';
-import { CountriesDropdown } from './CountriesDropdown';
+import { MaritalStatusesDropdown } from './Dropdown/MaritalStatuses';
+import { CountriesDropdown } from './Dropdown/CountriesDropdown';
 import { ErrorDTO } from '../Models/ErrorDTO';
-import { DisabilitiesDropdown } from './DisabilitiesDropdown';
-import { SexDropdown } from './SexDropown';
+import { DisabilitiesDropdown } from './Dropdown/DisabilitiesDropdown';
+import { SexDropdown } from './Dropdown/SexDropown';
+import { FieldData } from '../utils/FieldData';
+import { DateUtils } from '../utils/DateUtils';
 
 export interface IUserDetailsViewProps {
     data?: UserDTO;
@@ -59,14 +61,21 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         const namePattern = /^[a-zA-ZА-Яа-я]+$/
 
         if (!user.name.match(namePattern) || !user.surname.match(namePattern) || !user.lastname.match(namePattern)) {
-            alert('ФИО обязательно и должно содержать только буквы');
+            alert('ФИО обязательно и должно содержать только буквы и не быть пустым');
             return false;
         }
 
-        const phonePattern = /^[0-9]{7}$/;
+        const phonePattern = /^[0-9]{9}$/;
 
         if (user.mobilePhone && !user.mobilePhone.match(phonePattern)) {
-            alert('Мобильнйы телефон должен быть из 7 цифр')
+            alert('Мобильнйы телефон должен быть из 9 цифр')
+            return false;
+        }
+
+        const homePhonePattern = /^\d{6}$/;
+
+        if (user.homePhone && !user.homePhone.match(homePhonePattern)) {
+            alert('Домашний телефон должен быть из 6 цифр')
             return false;
         }
 
@@ -90,7 +99,7 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
             return false;
         }
 
-        const passportIdPattern = /^\d{14}$/;
+        const passportIdPattern = /^\w{14}$/;
         if (!user.passportId || !user.passportId.match(passportIdPattern)) {
             alert('Неверный формат ид. номера паспорта');
             return false;
@@ -110,6 +119,11 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
 
         if (!checkRequired(user.residenceAddress)) {
             alert('Адресс проживания является обязательным');
+            return false;
+        }
+
+        if (user.monthlyIncome && user.monthlyIncome < 0) {
+            alert('Доход не должен быть меньше нуля');
             return false;
         }
  
@@ -137,20 +151,27 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
             const response = await UsersService.addUser(user);
             if (response.status != 200) {
                 const errorInfo = await response.json();
-                alert(`Error while adding user: ${errorInfo.message}`);
+                let error = '';
+                if (errorInfo.message) {
+                    error = errorInfo.message;
+                } else {
+                    error = errorInfo.errors[0];
+                }
+                alert(`Error while adding user: ${error}`);
             } else {
                 alert('User has been added');
             }
         }
     }
+    
+    const onDateInput = (e: any) => {
+        e.preventDefault();
 
-    const dateFormat = (value: Date) => {
-        console.log(value);
-        return value.toISOString?.().substring(0, 10);
+        console.log(e);
     }
 
 
-    const fields: {label: string, required?: boolean, element: JSX.Element}[] = [
+    const fields: FieldData[] = [
         {
             label: 'Имя', 
             required: true,
@@ -169,7 +190,7 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         {
             label: 'Дата рождения',
             required: true,
-            element:  <input type="date" value={dateFormat(user.birthDate)} required onChange={(e) => onChangeDate(e, nameOf<UserDTO>('birthDate'))}/>
+            element:  <input type="date" onKeyDown={onDateInput} value={DateUtils.dateFormat(user.birthDate)} required onChange={(e) => onChangeDate(e, nameOf<UserDTO>('birthDate'))}/>
         },
         {
             label: 'Пол',
@@ -194,7 +215,7 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
         {
             label: 'Дата выдачи',
             required: true,
-            element: <input type="date" value={dateFormat(user.issuedDate)} onChange={(e) => onChange(e, nameOf<UserDTO>('issuedDate'))}/>
+            element: <input type="date" onKeyDown={onDateInput} value={DateUtils.dateFormat(user.issuedDate)} onChange={(e) => onChange(e, nameOf<UserDTO>('issuedDate'))}/>
         },
         {
             label: 'Ид. номер',
@@ -237,11 +258,11 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
             element: <input type="checkbox" value='Is retiree' checked={user.isRetiree} onChange={() => toggleCheckbox(nameOf<UserDTO>('isRetiree'))}/>
         },
         {
-            label: 'Сколько зарабатываешь?',
+            label: 'Месячный доход',
             element: <input type="number" value={user.monthlyIncome} onChange={(e) => onChange(e, nameOf<UserDTO>('monthlyIncome'))}/>
         },
         {
-            label: 'Служил?',
+            label: 'Военноябязанный',
             required: true,
             element: <input type="checkbox" checked={user.isConscripted} value='Is conscripted' onChange={() => toggleCheckbox(nameOf<UserDTO>('isConscripted'))}/>
         },
@@ -261,7 +282,7 @@ export const UserDetailsView = (props: IUserDetailsViewProps) => {
 
     return (
         <>
-            <Link to="/">Список пользователей</Link>
+            <Link to="/">Список пользователей</Link> 
             <form id="user-form" className='main-form'>
                 <table>
                     {fields.map(f => 

@@ -7,12 +7,17 @@ namespace BankDatabase
 {
     public interface IBankContext
     {
-         DbSet<City> Cities { get; set; }
-         DbSet<Country> Countries { get; set; }
-         DbSet<Disability> Disabilities { get; set; }
-         DbSet<MaritalStatus> MaritalStatuses { get; set; }
-         DbSet<User> Users { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<AccountsType> AccountsTypes { get; set; }
+        public DbSet<City> Cities { get; set; }
+        public DbSet<Contract> Contracts { get; set; }
+        public DbSet<Country> Countries { get; set; }
+        public DbSet<Currency> Currencies { get; set; }
+        public DbSet<DepositType> DepositTypes { get; set; }
+        public DbSet<Disability> Disabilities { get; set; }
+        public DbSet<MaritalStatus> MaritalStatuses { get; set; }
+        public DbSet<User> Users { get; set; }
 
-        int Save(); 
+        int SaveChanges(); 
     }
 }

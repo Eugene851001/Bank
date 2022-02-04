@@ -19,6 +19,9 @@ namespace BankAPI.Mappings
             CreateMap<Country, SelectableItemDTO>();
 
             CreateMap<Disability, SelectableItemDTO>();
+
+            CreateMap<Currency, SelectableItemDTO>()
+                .ForMember(nameof(SelectableItemDTO.Name), opt => opt.MapFrom(c => c.Code));
         }
     }
 }
