@@ -17,6 +17,7 @@ using FluentValidation;
 using System.Reflection;
 using Newtonsoft.Json;
 using BankAPI.DTO;
+using BankAPI.Services;
 
 namespace BankAPI
 {
@@ -44,6 +45,7 @@ namespace BankAPI
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
+            services.AddSingleton<AccountsService>();
             services.AddScoped<IBankContext, BankContext>();
         }
 

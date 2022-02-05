@@ -6,12 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BankAPI.Helpers;
+using BankAPI.Services;
 
 namespace BankAPI.Controllers
 {
     public class ContractsController: ApiControllerBase
     {
-        public ContractsController(IBankContext db) : base(db) { }
+        private readonly AccountsService _accountsService;
+
+        public ContractsController(IBankContext db, AccountsService accountsService) : base(db)
+        {
+            _accountsService = accountsService;
+        }
 
         [HttpPost]
         public ActionResult Add([FromBody] CreateContractRequest request)
@@ -36,7 +42,7 @@ namespace BankAPI.Controllers
                 AccountType = Constants.AccountTypes.Current,
                 Credit = request.Sum,
                 Debit = 0,
-                Number = request.AccountNumber,
+                Number = _accountsService.GetAccountNumber(Constants.AccountTypes.Current),
                 Code = request.AccountCode,
                 Currency = request.Currency,
 
@@ -49,8 +55,7 @@ namespace BankAPI.Controllers
                 AccountType = Constants.AccountTypes.Credit,
                 Credit = 0,
                 Debit = 0,
-                //TODO: generate number from accont type and guid
-                Number = request.AccountNumber,
+                Number = _accountsService.GetAccountNumber(Constants.AccountTypes.Credit),
                 Code = request.AccountCode,
                 Currency = request.Currency,
             };
@@ -67,7 +72,7 @@ namespace BankAPI.Controllers
         {
             var account = this.db.Accounts
                 .Where(ac => ac.AccountType == Constants.AccountTypes.DevelopmentFund)
-                .SingleOrDefault();
+                .FirstOrDefault();
 
             account.Credit = account.Credit + sum;
 

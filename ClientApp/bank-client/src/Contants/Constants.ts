@@ -32,7 +32,6 @@ export const Constants = class {
         public static get newItem(): CreateContractRequest {
             return {
                 user: 1,
-                accountNumber: '',
                 accountCode: '',
                 startDate: new Date(),
                 endDate: new Date(),

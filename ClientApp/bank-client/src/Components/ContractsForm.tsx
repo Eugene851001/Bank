@@ -43,10 +43,6 @@ export const ContractsForm = () => {
             element: <input type="number" value={contract.user} onChange={e => onChange(e, nameOf<CreateContractRequest>('user'))} />
         },
         {
-            label: 'Номер счёта',
-            element: <input type="text" value={contract.accountNumber} onChange={e => onChange(e, nameOf<CreateContractRequest>('accountNumber'))} />
-        },
-        {
             label: 'Код',
             element:  <input type="text" value={contract.accountCode} onChange={e => onChange(e, nameOf<CreateContractRequest>('accountCode'))} />
         },

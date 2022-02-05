@@ -9,8 +9,6 @@ namespace BankAPI.DTO.Requests
     {
         public int User { get; set; }
 
-        public string AccountNumber { get; set; }
-
         public string AccountCode { get; set; }
 
         public DateTime StartDate { get; set; }

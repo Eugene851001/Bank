@@ -23,6 +23,6 @@ export class SelectableItemsService {
     }
 
     private static getSelectableItems(controller: string) {
-        return fetch(`/api/${controller}`).then(response => response.json());
+        return fetch(`/api/selectableItems/${controller}`).then(response => response.json());
     }
 }
