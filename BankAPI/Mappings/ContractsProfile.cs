@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BankDatabase;
 using BankAPI.DTO.Requests;
+using BankAPI.DTO;
 
 namespace BankAPI.Mappings
 {
@@ -13,6 +14,10 @@ namespace BankAPI.Mappings
         public ContractsProfile()
         {
             CreateMap<CreateContractRequest, Contract>();
+
+            CreateMap<Contract, DepositDemo>();
+
+            CreateMap<Contract, DepositDTO>();
         }
     }
 }

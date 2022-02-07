@@ -26,10 +26,12 @@ namespace BankDatabase
         public virtual DbSet<DepositType> DepositTypes { get; set; }
         public virtual DbSet<Disability> Disabilities { get; set; }
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
+        public virtual DbSet<Transaction> Transactions { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.UseLazyLoadingProxies();
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
@@ -51,7 +53,9 @@ namespace BankDatabase
 
                 entity.HasIndex(e => e.Owner, "IXFK_Accounts_Users");
 
-                entity.Property(e => e.Balance).HasColumnType("money");
+                entity.Property(e => e.Balance)
+                    .HasColumnType("money")
+                    .HasComputedColumnSql("(([Credit]-[Debit])+((2)*[Active])*([Debit]-[Credit]))", true);
 
                 entity.Property(e => e.Code)
                     .IsRequired()
@@ -119,8 +123,6 @@ namespace BankDatabase
             {
                 entity.HasIndex(e => e.Currency, "IXFK_Contracts_Currencies");
 
-                entity.HasIndex(e => e.DepositType, "IXFK_Contracts_DepositTypes");
-
                 entity.Property(e => e.EndDate).HasColumnType("date");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
@@ -132,11 +134,6 @@ namespace BankDatabase
                     .HasForeignKey(d => d.Currency)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Contracts_Currencies");
-
-                entity.HasOne(d => d.DepositTypeNavigation)
-                    .WithMany(p => p.Contracts)
-                    .HasForeignKey(d => d.DepositType)
-                    .HasConstraintName("FK_Contracts_DepositTypes");
             });
 
             modelBuilder.Entity<Country>(entity =>
@@ -176,6 +173,29 @@ namespace BankDatabase
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Transaction>(entity =>
+            {
+                entity.HasIndex(e => e.Source, "IXFK_Transactions_Accounts");
+
+                entity.HasIndex(e => e.Destination, "IXFK_Transactions_Accounts_02");
+
+                entity.Property(e => e.Sum).HasColumnType("money");
+
+                entity.Property(e => e.Time).HasColumnType("datetime");
+
+                entity.HasOne(d => d.DestinationNavigation)
+                    .WithMany(p => p.TransactionDestinationNavigations)
+                    .HasForeignKey(d => d.Destination)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Transactions_Accounts_02");
+
+                entity.HasOne(d => d.SourceNavigation)
+                    .WithMany(p => p.TransactionSourceNavigations)
+                    .HasForeignKey(d => d.Source)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Transactions_Accounts");
             });
 
             modelBuilder.Entity<User>(entity =>

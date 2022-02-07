@@ -22,12 +22,11 @@ export const Users = () => {
     return users ? (
         <div className='page-content'>
             <h1>Список пользователей</h1>
-            <table className='users-table'>
-                <tr><th>Фамилия</th><th>Отчество</th><th>Имя</th><th></th><th></th></tr>
+            <table className='users-table'> 
+                <tr><th>Фамилия</th><th>Отчество</th><th>Имя</th></tr>
                 {(users as UserDemo[]).map(u => <User key={u.id} {...u}/>)}
             </table>
             <Link to="/users/create">Добавить пользователя</Link>
-            <Link to="/accounts">Счета</Link>
-            <Link to="/contracts">Оформить договор</Link>
+            <Link to="/deposits">Депозиты</Link>
         </div>) : <p>Loading...</p>;
 }

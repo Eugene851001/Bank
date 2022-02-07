@@ -26,7 +26,7 @@ namespace BankAPI.Controllers
         public ActionResult Disabilities() => Ok(HelpGetAll(this.db.Disabilities));
 
         [HttpGet("Currencies")]
-        public ActionResult Currencies() => Ok(HelpGetAll(this.db.Disabilities));
+        public ActionResult Currencies() => Ok(HelpGetAll(this.db.Currencies));
 
 
         private IEnumerable<SelectableItemDTO> HelpGetAll<T>(DbSet<T> collection) where T: class

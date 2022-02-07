@@ -1,5 +1,4 @@
-
-export interface CreateContractRequest {
+export interface DepositDTO {
     user: number;
     startDate: Date;
     endDate: Date;

@@ -45,8 +45,11 @@ namespace BankAPI
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 });
 
-            services.AddSingleton<AccountsService>();
             services.AddScoped<IBankContext, BankContext>();
+
+            services.AddScoped<AccountsService>();
+            services.AddScoped<TransactionsService>();
+            services.AddScoped<DepositsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

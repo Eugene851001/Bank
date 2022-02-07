@@ -29,16 +29,15 @@ export const Constants = class {
     } 
 
     public static Contracts = class {
-        public static get newItem(): CreateContractRequest {
+        public static getNewItem(user: number = 1): CreateContractRequest {
             return {
                 user: 1,
-                accountCode: '',
                 startDate: new Date(),
                 endDate: new Date(),
                 sum: 10,
                 percent: 0,
                 currency: 1,
-                depositType: 1,
+                revocable: false,
             }
         }
     }

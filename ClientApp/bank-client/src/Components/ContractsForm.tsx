@@ -1,21 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Constants } from '../Contants/Constants';
 import { CreateContractRequest } from '../Models/CreateContractRequest';
-import { ContractsService } from '../Services/ContractsService';
+import { UserDemo } from '../Models/UserDemo';
+import { UserDTO } from '../Models/UserDTO';
+import { DeposistsService } from '../Services/DeposistsService';
+import { UsersService } from '../Services/UsersService';
 import { DateUtils } from '../utils/DateUtils';
 import { FieldData } from '../utils/FieldData';
 import { nameOf } from '../utils/NameOf';
 import { CurrenciesDropdown } from './Dropdown/CurrenciesDropdown';
+import { RevocableDropdown } from './Dropdown/RevocableDropdown';
 
 export const ContractsForm = () => {
- 
-    const [contract, setContract] = useState<CreateContractRequest>(Constants.Contracts.newItem);
+    const { userId } = useParams();
+    const [contract, setContract] = useState<CreateContractRequest>(Constants.Contracts.getNewItem());
+    const [user, setUser] = useState<UserDTO>(Constants.Users.newItem);
+
+    useEffect(() => {
+        async function loadUser() {
+            if (!userId) return;
+
+            const response = await UsersService.getUser(+userId);
+            contract.user = +userId;
+            setUser(response);
+        }
+
+        loadUser();
+    }, []);
 
     const onSubmit = async (e: any) => {
         e.preventDefault();
 
         if (contract) {
-            const response = await ContractsService.addContract(contract);
+            const response = await DeposistsService.addContract(contract);
             if (response.status == 200) {
                 alert('Contract has been added');
             } else {
@@ -35,16 +53,26 @@ export const ContractsForm = () => {
         const value = e.target.value;
 
         setContract({...contract, [property]: value});
+    };
+
+    const onChangeRevocable = (e: any) => {
+        const value = e.target.value;
+
+        setContract({...contract, revocable: value == 1})
     }
 
     const fields: FieldData[] = [
         {
-            label: 'Пользователь',
-            element: <input type="number" value={contract.user} onChange={e => onChange(e, nameOf<CreateContractRequest>('user'))} />
+            label: 'Фамилия',
+            element: <input type="text" value={user.lastname} />
         },
         {
-            label: 'Код',
-            element:  <input type="text" value={contract.accountCode} onChange={e => onChange(e, nameOf<CreateContractRequest>('accountCode'))} />
+            label: 'Имя',
+            element: <input type="text" value={user.name} /> 
+        },
+        {
+            label: 'Отчество',
+            element: <input type="text" value={user.surname} />
         },
         {
             label: 'Дата начала',
@@ -69,6 +97,10 @@ export const ContractsForm = () => {
                     selectedId={contract.currency} 
                     onChange={e => onChange(e, nameOf<CreateContractRequest>('currency'))}
                 />)
+        },
+        {
+            label: 'Отзывной',
+            element: <RevocableDropdown selectedId={contract.revocable ? 0 : 1} onChange={e => onChangeRevocable(e)}/>
         }
     ];
 

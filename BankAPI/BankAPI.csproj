@@ -5,17 +5,29 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <COMReference Include="Microsoft.Office.Interop.Excel">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>7</VersionMinor>
+      <VersionMajor>1</VersionMajor>
+      <Guid>00020813-0000-0000-c000-000000000046</Guid>
+      <Lcid>0</Lcid>
+      <Isolated>false</Isolated>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.22" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTO\Responses\" />
+    <ProjectReference Include="..\BankDatabase\BankDatabase.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BankDatabase\BankDatabase.csproj" />
+    <Folder Include="DTO\Responses\" />
   </ItemGroup>
 
 

@@ -1,14 +1,15 @@
-CREATE TRIGGER [trg_account_balance_update]
-ON [Accounts]
-AFTER INSERT
-AS
-	DECLARE @Balance money;
-	IF ((SELECT [Active] FROM inserted) = 0)
-		SET @Balance = (SELECT [Credit] FROM inserted) - (SELECT [Debit] FROM [inserted])
-	ELSE
-		SET @Balance = (SELECT [Debit] FROM inserted) - (SELECT [Credit] FROM inserted);
+--DROP TRIGGER [trg_account_balance_update]
+--CREATE TRIGGER [trg_account_balance_update]
+--ON [Accounts]
+--AFTER INSERT, UPDATE
+--AS
+--	DECLARE @Balance money;
+--	IF ((SELECT [Active] FROM inserted) = 0)
+--		SET @Balance = (SELECT [Credit] FROM inserted) - (SELECT [Debit] FROM [inserted])
+--	ELSE
+--		SET @Balance = (SELECT [Debit] FROM inserted) - (SELECT [Credit] FROM inserted);
 
-	UPDATE [Accounts] SET [Balance] = @Balance WHERE [Accounts].[Id] = (SELECT [Id] FROM inserted);
+--	UPDATE [Accounts] SET [Balance] = @Balance WHERE [Accounts].[Id] = (SELECT [Id] FROM inserted);
 
 
 DROP TRIGGER [trg_account_number_check];

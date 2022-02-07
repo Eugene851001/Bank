@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace BankAPI.DTO.Requests
 {
-    public class CloseDayRequest
+    public class CloseDepositRequest
     {
         public DateTime CurrentDate { get; set; }
+
+        public int ContractId { get; set; }
     }
 }

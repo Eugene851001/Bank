@@ -1,5 +1,6 @@
 ﻿using BankAPI.DTO;
 using BankAPI.DTO.Requests;
+using BankAPI.Helpers;
 using BankDatabase;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,6 +12,7 @@ namespace BankAPI.Controllers
 {
     public class AccountsController: ApiControllerBase
     {
+
         public AccountsController(IBankContext db): base(db) { }
 
         [HttpGet]
@@ -33,13 +35,6 @@ namespace BankAPI.Controllers
                 .ToArray();
 
             return Ok(accounts);
-        }
-
-        [Route("CloseDay")]
-        [HttpPut]
-        public ActionResult BankDayClosing([FromBody] CloseDayRequest request)
-        {
-            return Ok();
         }
     }
 }

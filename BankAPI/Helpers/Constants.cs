@@ -27,5 +27,10 @@ namespace BankAPI.Helpers
             public static byte ActivePassive = 2;
         }
 
+        public static class Intervals
+        {
+            public static int Month = 30;
+        }
+
     }
 }

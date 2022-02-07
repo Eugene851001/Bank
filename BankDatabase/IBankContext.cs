@@ -16,6 +16,7 @@ namespace BankDatabase
         public DbSet<DepositType> DepositTypes { get; set; }
         public DbSet<Disability> Disabilities { get; set; }
         public DbSet<MaritalStatus> MaritalStatuses { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<User> Users { get; set; }
 
         int SaveChanges(); 

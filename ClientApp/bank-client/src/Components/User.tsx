@@ -34,6 +34,9 @@ export const User = (props: UserProps) => {
                 <Link to={`/users/${props.id}`}><p>Редактировать</p></Link> 
             </td>
             <td>
+                <Link to={`/contracts/${props.id}`}>Оформить договор</Link>
+            </td>
+            <td>
                 <button className='delete-button' onClick={onDelete}>Удалить</button>
             </td>
         </tr> : null;

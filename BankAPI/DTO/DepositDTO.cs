@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BankAPI.DTO.Requests
+namespace BankAPI.DTO
 {
-    public class CreateContractRequest
+    public class DepositDTO
     {
-        public int User { get; set; }
+        public int Id { get; set; }
 
         public DateTime StartDate { get; set; }
 
         public DateTime EndDate { get; set; }
-        
+
         public decimal Sum { get; set; }
-        
+
         public double Percent { get; set; }
-        
+
         public byte Currency { get; set; }
 
         public bool Revocable { get; set; }
-       
     }
 }

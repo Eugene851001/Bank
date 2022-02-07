@@ -1,3 +1,4 @@
+import { CloseDayRequest } from "../Models/CloseDayRequest";
 
 export const AccountsService = class {
     
