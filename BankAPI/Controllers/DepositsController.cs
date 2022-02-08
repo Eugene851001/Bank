@@ -28,7 +28,7 @@ namespace BankAPI.Controllers
         [HttpGet]
         public ActionResult GetAll()
         {
-            DepositDemo[] deposits = this.db.Contracts
+            DepositDemo[] deposits = this.db.Deposits
                 .Select(contract => this.mapper.Map<DepositDemo>(contract))
                 .ToArray();
 
@@ -39,7 +39,7 @@ namespace BankAPI.Controllers
         [HttpGet]
         public ActionResult GetSingle([FromRoute] int id)
         {
-            var contract = this.db.Contracts.Find(id);
+            var contract = this.db.Deposits.Find(id);
 
             var result = this.mapper.Map<DepositDTO>(contract);
 
@@ -50,10 +50,13 @@ namespace BankAPI.Controllers
         [HttpGet]
         public ActionResult GetAccounts([FromRoute] int id)
         {
-            AccountDTO[] accounts = this.db.Contracts
-                 .Find(id).Accounts
-                 .Select(ac => this.mapper.Map<AccountDTO>(ac))
-                 .ToArray();
+            var deposit = this.db.Deposits.Find(id);
+            AccountDTO[] accounts = new [] 
+                { 
+                    deposit.MainAccountNavigation, 
+                    deposit.PercentAccountNavigation 
+                }.Select(ac => this.mapper.Map<AccountDTO>(ac))
+                .ToArray();
 
             return Ok(accounts);
         }
@@ -78,7 +81,7 @@ namespace BankAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Add([FromBody] CreateContractRequest request)
+        public ActionResult Add([FromBody] CreateDepositRequest request)
         {
             _deposistsService.Create(request);
 
@@ -137,7 +140,7 @@ namespace BankAPI.Controllers
         [HttpGet]
         public ActionResult GetReport([FromRoute] int id)
         {
-            var contract = this.db.Contracts.Find(id);
+            var contract = this.db.Deposits.Find(id);
 
             var report = ReportsService.GenerateReportMonth(contract);
 

@@ -33,7 +33,7 @@ namespace BankAPI.Services
             return $"{code}{guid.ToString().Substring(0, 9)}";
         }
 
-        public void AddDepositAccounts(Contract contract, int userId)
+        public void AddDepositAccounts(Deposit contract, int userId)
         {
             var accountCurrent = new Account()
             {
@@ -45,7 +45,6 @@ namespace BankAPI.Services
                 Number = GetAccountNumber(Constants.AccountTypes.Current),
                 Code = "",
                 Currency = contract.Currency,
-                Contract = contract.Id,
             };
 
             var accountPercent = new Account()
@@ -58,7 +57,6 @@ namespace BankAPI.Services
                 Number = GetAccountNumber(Constants.AccountTypes.Credit),
                 Code = "",
                 Currency = contract.Currency,
-                Contract = contract.Id,
             };
 
             //TODO: improve trigger to work when add multiple values
@@ -66,6 +64,11 @@ namespace BankAPI.Services
             this.db.SaveChanges();
 
             this.db.Accounts.Add(accountPercent);
+            this.db.SaveChanges();
+
+            contract.MainAccount = accountCurrent.Id;
+            contract.PercentAccount = accountPercent.Id;
+
             this.db.SaveChanges();
         }
     }

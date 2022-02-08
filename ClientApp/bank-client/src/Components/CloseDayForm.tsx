@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCurrentDate } from '../Contexts/CurrentDateContext';
 import { DeposistsService } from '../Services/DeposistsService';
+import { SystemService } from '../Services/SystemService';
 import { DateUtils } from '../utils/DateUtils';
 
 export interface CloseDayFormProps {
@@ -8,12 +9,20 @@ export interface CloseDayFormProps {
 }
 
 export const CloseDayFrom = (props: CloseDayFormProps) => {
-    const {currentDate, setCurrentDate} = useCurrentDate();
+    const [currentDate, setCurrentDate] = useState(new Date());
+
+    async function loadCurrentDate() {
+        const response = await SystemService.getCurrentTime();
+
+        setCurrentDate(response.currentDate);
+    }
+
+    useEffect(() => {
+        loadCurrentDate();
+    }, []);
 
     const onChange = (e: any) => {
         e.preventDefault();
-
-        setCurrentDate(e.target.value);
     }
 
     const onSubmit = async (e: any) => {
@@ -24,9 +33,7 @@ export const CloseDayFrom = (props: CloseDayFormProps) => {
         if (response.status == 200) {
             alert('Operation has been performed');
             props.onClose?.();
-            const newDate = new Date();
-            newDate.setDate(currentDate.getDate() + 1);
-            setCurrentDate(newDate);
+            await loadCurrentDate();
         } else {
             alert('Something went wrong');
         }

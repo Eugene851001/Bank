@@ -21,8 +21,6 @@ INSERT INTO Accounts ([Number], [Code], [Active], [Debit], [Credit], [Owner], [A
 
 INSERT INTO DepositsNames ([Name]) VALUES ('–ублю, Ergo Sum'), ('–ублю, Ergo Sum+'), ('Ћучшее будущее'), ('¬клад в будущее')
 
-SELECT * FROM DepositsPlans;
-
 INSERT INTO DepositsPlans ([Name], [Currency], [Duration], [Revocable], [Percent], [Online]) VALUES
 (1, 1, 45, 0, 11.11, 0),
 (1, 1, 45, 0, 11.11, 1),
@@ -32,6 +30,10 @@ INSERT INTO DepositsPlans ([Name], [Currency], [Duration], [Revocable], [Percent
 (1, 1, 45, 1, 9.09, 0),
 (1, 1, 45, 1, 9.09, 1),
 (3, 2, 24 * 30, 0, 3.50, 1) 
+
+
+INSERT INTO CreditObject ([Name]) VALUES ('Automobiles'), ('Houses'), ('Personal');
+
 
 
 SELECT * FROM Users
@@ -46,6 +48,6 @@ SELECT * FROM Accounts;
 
 SELECT * FROM Transactions;
 
-SELECT * FROM Contracts;
+SELECT * FROM Deposits;
 
 DELETE FROM Accounts WHERE Id > 1003 AND Id < 1006

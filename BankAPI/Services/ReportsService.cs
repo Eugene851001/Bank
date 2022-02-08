@@ -10,15 +10,21 @@ namespace BankAPI.Services
 {
     public class ReportsService
     {
-        public static Dictionary<DateTime, decimal> GenerateReportDay(Contract contract) =>
+        public static Dictionary<DateTime, decimal> GenerateReportDay(Deposit contract) =>
             GenerateReportWithInterval(1, contract);
 
-        public static Dictionary<DateTime, decimal> GenerateReportMonth(Contract contract) =>
+        public static Dictionary<DateTime, decimal> GenerateReportMonth(Deposit contract) =>
             GenerateReportWithInterval(Constants.Intervals.Month, contract);
 
-        private static Dictionary<DateTime, decimal> GenerateReportWithInterval(int daysInterval, Contract contract)
+        private static Dictionary<DateTime, decimal> GenerateReportWithInterval(int daysInterval, Deposit contract)
         {
             var result = new Dictionary<DateTime, decimal>();
+
+            if (!contract.Revocable)
+            {
+                result.Add(contract.EndDate, contract.Sum + (decimal)contract.Percent * contract.Sum);
+                return result;
+            }
 
             int totalDays = (contract.EndDate - contract.StartDate).Days;
             int totalIntervals = totalDays / daysInterval;

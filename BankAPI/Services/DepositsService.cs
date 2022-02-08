@@ -13,7 +13,6 @@ namespace BankAPI.Services
         private readonly IBankContext db;
         private readonly AccountsService accountsService;
 
-
         private readonly TransactionsService transactionsService;
     
         public DepositsService(
@@ -26,11 +25,11 @@ namespace BankAPI.Services
             this.accountsService = accountsService;
         }
 
-        public void Create(CreateContractRequest request)
+        public void Create(CreateDepositRequest request)
         {
             var plan = this.db.DepositsPlans.Find(request.DepositPlan);
 
-            var contract = new Contract()
+            var contract = new Deposit()
             {
                 StartDate = request.StartDate,
                 EndDate = request.StartDate.AddDays(plan.Duration),
@@ -41,12 +40,12 @@ namespace BankAPI.Services
                 DepositPlan = request.DepositPlan,
             };
 
-            this.db.Contracts.Add(contract);
-            this.db.SaveChanges();
-
             this.accountsService.AddDepositAccounts(contract, request.User);
 
-            var mainAccount = contract.Accounts.FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.Current);
+            this.db.Deposits.Add(contract);
+            this.db.SaveChanges();
+
+            var mainAccount = contract.MainAccountNavigation;
 
             var cashAccount = this.db.Accounts.FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.CashRegister);
 
@@ -59,7 +58,7 @@ namespace BankAPI.Services
 
         public void CloseBankDay(DateTime currentDate)
         {
-            var contracts = this.db.Contracts
+            var contracts = this.db.Deposits
                 .Where(contract => contract.StartDate <= currentDate
                     && contract.EndDate >= currentDate)
                 .ToArray();
@@ -67,29 +66,33 @@ namespace BankAPI.Services
             foreach (var contact in contracts)
             {
                 CommitPercents(contact);
-            } 
+
+                if ((currentDate - contact.StartDate).Days == Constants.Intervals.Month)
+                {
+                    WithdrawCash(contact);
+                }
+            }
+
+            var system = this.db.SystemVariables.Find(1);
+
+            system.CurrentDate = system.CurrentDate.AddDays(1);
+            this.db.SaveChanges();
         }
 
         public void WithdrawPercents(int depositId, DateTime currentDate)
         {
-            var contract = this.db.Contracts.Find(depositId);
+            var contract = this.db.Deposits.Find(depositId);
 
-            var account = contract.Accounts
-                .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.Credit);
+            var account = contract.PercentAccountNavigation;
 
             if (!contract.Revocable)
             {
-                throw new ArgumentException("Can not withdraw money from not revocable service");
+                throw new ArgumentException("Can not withdraw money from not revocable deposit");
             }
 
-            if (contract.StartDate > currentDate || contract.EndDate < currentDate)
+            if (contract.StartDate > currentDate || contract.EndDate < currentDate || contract.Sum == 0)
             {
                 throw new ArgumentException("This deposit is not active");
-            }
-
-            if (contract.StartDate.Day != currentDate.Day)
-            {
-                throw new ArgumentException("The percent can be withrowed only once a month");
             }
 
             var cashRegisterAccount = this.db.Accounts
@@ -103,7 +106,7 @@ namespace BankAPI.Services
 
         public void CloseDeposit(int contractId, DateTime currentDate)
         {
-            var contract = this.db.Contracts.Find(contractId);
+            var contract = this.db.Deposits.Find(contractId);
 
             if (!contract.Revocable && contract.EndDate > currentDate)
             {
@@ -116,11 +119,9 @@ namespace BankAPI.Services
             var bankAccount = this.db.Accounts
                 .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.DevelopmentFund);
 
-            var mainAccount = contract.Accounts
-                .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.Current);
+            var mainAccount = contract.MainAccountNavigation;
 
-            var creditAccount = contract.Accounts
-                .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.Credit);
+            var creditAccount = contract.PercentAccountNavigation;
 
             decimal totalSum = mainAccount.Balance.Value + creditAccount.Balance.Value;
 
@@ -135,16 +136,28 @@ namespace BankAPI.Services
             contract.Sum = 0;
         }
 
-        private void CommitPercents(Contract contract)
+        private void CommitPercents(Deposit contract)
         {
             var bankAccount = this.db.Accounts
                 .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.DevelopmentFund);
-            var percentAccount = contract.Accounts.FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.Credit);
+            var percentAccount = contract.PercentAccountNavigation;
 
             //int daysPassed = (currentDate - contract.StartDate).Days;
-            decimal sum = contract.Sum * (decimal)contract.Percent / ((contract.EndDate - contract.StartDate).Days * 100);
+            decimal sum = GetDayliSum(contract);
 
             this.transactionsService.CommitTransaction(bankAccount, percentAccount, sum);
         }
+
+        private void WithdrawCash(Deposit contract)
+        {
+            var cashAccount = this.db.Accounts
+                .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.CashRegister);
+
+            decimal sum = GetDayliSum(contract) * Constants.Intervals.Month;
+            this.transactionsService.CommitTransaction(contract.PercentAccountNavigation, cashAccount, sum);
+        }
+
+        private static decimal GetDayliSum(Deposit contract) =>
+            contract.Sum * (decimal)contract.Percent / ((contract.EndDate - contract.StartDate).Days * 100);
     }
 }

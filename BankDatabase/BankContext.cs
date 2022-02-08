@@ -20,14 +20,18 @@ namespace BankDatabase
         public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<AccountsType> AccountsTypes { get; set; }
         public virtual DbSet<City> Cities { get; set; }
-        public virtual DbSet<Contract> Contracts { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<Credit> Credits { get; set; }
+        public virtual DbSet<CreditObject> CreditObjects { get; set; }
+        public virtual DbSet<CreditPlan> CreditPlans { get; set; }
+        public virtual DbSet<CreditsName> CreditsNames { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
-        public virtual DbSet<DepositType> DepositTypes { get; set; }
+        public virtual DbSet<Deposit> Deposits { get; set; }
         public virtual DbSet<DepositsName> DepositsNames { get; set; }
         public virtual DbSet<DepositsPlan> DepositsPlans { get; set; }
         public virtual DbSet<Disability> Disabilities { get; set; }
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
+        public virtual DbSet<SystemVariable> SystemVariables { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
@@ -48,8 +52,6 @@ namespace BankDatabase
             modelBuilder.Entity<Account>(entity =>
             {
                 entity.HasIndex(e => e.AccountType, "IXFK_Accounts_AccountsTypes");
-
-                entity.HasIndex(e => e.Contract, "IXFK_Accounts_Contracts");
 
                 entity.HasIndex(e => e.Currency, "IXFK_Accounts_Currencies");
 
@@ -79,11 +81,6 @@ namespace BankDatabase
                     .HasForeignKey(d => d.AccountType)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Accounts_AccountsTypes");
-
-                entity.HasOne(d => d.ContractNavigation)
-                    .WithMany(p => p.Accounts)
-                    .HasForeignKey(d => d.Contract)
-                    .HasConstraintName("FK_Accounts_Contracts");
 
                 entity.HasOne(d => d.CurrencyNavigation)
                     .WithMany(p => p.Accounts)
@@ -121,11 +118,29 @@ namespace BankDatabase
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<Contract>(entity =>
+            modelBuilder.Entity<Country>(entity =>
             {
-                entity.HasIndex(e => e.Currency, "IXFK_Contracts_Currencies");
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
-                entity.HasIndex(e => e.DepositPlan, "IXFK_Contracts_DepositsPlans");
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Credit>(entity =>
+            {
+                entity.HasIndex(e => e.Id, "IXFK_Credits_Accounts");
+
+                entity.HasIndex(e => e.MainAccount, "IXFK_Credits_Accounts_02");
+
+                entity.HasIndex(e => e.PercentAccount, "IXFK_Credits_Accounts_03");
+
+                entity.HasIndex(e => e.CreditPlan, "IXFK_Credits_CreditPlans");
+
+                entity.HasIndex(e => e.Currency, "IXFK_Credits_Currencies");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.EndDate).HasColumnType("date");
 
@@ -133,22 +148,63 @@ namespace BankDatabase
 
                 entity.Property(e => e.Sum).HasColumnType("money");
 
+                entity.HasOne(d => d.CreditPlanNavigation)
+                    .WithMany(p => p.Credits)
+                    .HasForeignKey(d => d.CreditPlan)
+                    .HasConstraintName("FK_Credits_CreditPlans");
+
                 entity.HasOne(d => d.CurrencyNavigation)
-                    .WithMany(p => p.Contracts)
+                    .WithMany(p => p.Credits)
                     .HasForeignKey(d => d.Currency)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Contracts_Currencies");
+                    .HasConstraintName("FK_Credits_Currencies");
 
-                entity.HasOne(d => d.DepositPlanNavigation)
-                    .WithMany(p => p.Contracts)
-                    .HasForeignKey(d => d.DepositPlan)
-                    .HasConstraintName("FK_Contracts_DepositsPlans");
+                entity.HasOne(d => d.MainAccountNavigation)
+                    .WithMany(p => p.CreditMainAccountNavigations)
+                    .HasForeignKey(d => d.MainAccount)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Credits_Accounts_02");
+
+                entity.HasOne(d => d.PercentAccountNavigation)
+                    .WithMany(p => p.CreditPercentAccountNavigations)
+                    .HasForeignKey(d => d.PercentAccount)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Credits_Accounts_03");
             });
 
-            modelBuilder.Entity<Country>(entity =>
+            modelBuilder.Entity<CreditObject>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                entity.ToTable("CreditObject");
 
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<CreditPlan>(entity =>
+            {
+                entity.HasIndex(e => e.Object, "IXFK_CreditPlans_CreditObject");
+
+                entity.HasIndex(e => e.Name, "IXFK_CreditPlans_CreditsNames");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.MinValue).HasColumnType("money");
+
+                entity.HasOne(d => d.NameNavigation)
+                    .WithMany(p => p.CreditPlans)
+                    .HasForeignKey(d => d.Name)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CreditPlans_CreditsNames");
+
+                entity.HasOne(d => d.ObjectNavigation)
+                    .WithMany(p => p.CreditPlans)
+                    .HasForeignKey(d => d.Object)
+                    .HasConstraintName("FK_CreditPlans_CreditObject");
+            });
+
+            modelBuilder.Entity<CreditsName>(entity =>
+            {
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50)
@@ -164,6 +220,46 @@ namespace BankDatabase
                     .HasMaxLength(3)
                     .IsUnicode(false)
                     .IsFixedLength(true);
+            });
+
+            modelBuilder.Entity<Deposit>(entity =>
+            {
+                entity.HasIndex(e => e.Currency, "IXFK_Contracts_Currencies");
+
+                entity.HasIndex(e => e.DepositPlan, "IXFK_Contracts_DepositsPlans");
+
+                entity.HasIndex(e => e.MainAccount, "IXFK_Deposits_Accounts");
+
+                entity.HasIndex(e => e.PercentAccount, "IXFK_Deposits_Accounts_02");
+
+                entity.Property(e => e.EndDate).HasColumnType("date");
+
+                entity.Property(e => e.StartDate).HasColumnType("date");
+
+                entity.Property(e => e.Sum).HasColumnType("money");
+
+                entity.HasOne(d => d.CurrencyNavigation)
+                    .WithMany(p => p.Deposits)
+                    .HasForeignKey(d => d.Currency)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Contracts_Currencies");
+
+                entity.HasOne(d => d.DepositPlanNavigation)
+                    .WithMany(p => p.Deposits)
+                    .HasForeignKey(d => d.DepositPlan)
+                    .HasConstraintName("FK_Contracts_DepositsPlans");
+
+                entity.HasOne(d => d.MainAccountNavigation)
+                    .WithMany(p => p.DepositMainAccountNavigations)
+                    .HasForeignKey(d => d.MainAccount)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Deposits_Accounts");
+
+                entity.HasOne(d => d.PercentAccountNavigation)
+                    .WithMany(p => p.DepositPercentAccountNavigations)
+                    .HasForeignKey(d => d.PercentAccount)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Deposits_Accounts_02");
             });
 
             modelBuilder.Entity<DepositsName>(entity =>
@@ -212,6 +308,15 @@ namespace BankDatabase
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<SystemVariable>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("id");
+
+                entity.Property(e => e.CurrentDate).HasColumnType("date");
             });
 
             modelBuilder.Entity<Transaction>(entity =>

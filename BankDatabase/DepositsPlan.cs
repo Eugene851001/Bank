@@ -9,7 +9,7 @@ namespace BankDatabase
     {
         public DepositsPlan()
         {
-            Contracts = new HashSet<Contract>();
+            Deposits = new HashSet<Deposit>();
         }
 
         public int Id { get; set; }
@@ -23,6 +23,6 @@ namespace BankDatabase
 
         public virtual Currency CurrencyNavigation { get; set; }
         public virtual DepositsName NameNavigation { get; set; }
-        public virtual ICollection<Contract> Contracts { get; set; }
+        public virtual ICollection<Deposit> Deposits { get; set; }
     }
 }

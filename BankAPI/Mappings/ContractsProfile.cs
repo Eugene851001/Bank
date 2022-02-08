@@ -13,11 +13,11 @@ namespace BankAPI.Mappings
     {
         public ContractsProfile()
         {
-            CreateMap<CreateContractRequest, Contract>();
+            CreateMap<CreateContractRequest, Deposit>();
 
-            CreateMap<Contract, DepositDemo>();
+            CreateMap<Deposit, DepositDemo>();
 
-            CreateMap<Contract, DepositDTO>();
+            CreateMap<Deposit, DepositDTO>();
 
             CreateMap<DepositsPlan, DepositPlanDTO>();
                 //.ForMember(nameof(DepositPlanDTO.Name), opt => opt.MapFrom(p => p.NameNavigation.Name));

@@ -12,7 +12,5 @@ namespace BankAPI.DTO.Requests
         public DateTime StartDate { get; set; }
 
         public int Sum { get; set; }
-
-        public int DepositPlan { get; set; }
     }
 }
