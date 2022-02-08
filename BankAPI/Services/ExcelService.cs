@@ -26,7 +26,6 @@ namespace BankAPI.Services
                 row++;
             }
 
-
             //workSheet.Columns[1].Autofit();
             //workSheet.Columns[2].Autofit();
         }

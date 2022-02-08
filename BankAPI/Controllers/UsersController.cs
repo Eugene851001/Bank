@@ -38,8 +38,10 @@ namespace BankAPI.Controllers
             {
                 return NotFound();
             }
+
+            UserDTO result = this.mapper.Map<UserDTO>(user);
             
-            return Ok(user);
+            return Ok(result);
         }
 
         [HttpPut]

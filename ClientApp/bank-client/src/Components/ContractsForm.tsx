@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Constants } from '../Contants/Constants';
 import { CreateContractRequest } from '../Models/CreateContractRequest';
+import { DepositPlanDTO } from '../Models/DepositPlanDTO';
 import { UserDemo } from '../Models/UserDemo';
 import { UserDTO } from '../Models/UserDTO';
 import { DeposistsService } from '../Services/DeposistsService';
@@ -9,24 +10,28 @@ import { UsersService } from '../Services/UsersService';
 import { DateUtils } from '../utils/DateUtils';
 import { FieldData } from '../utils/FieldData';
 import { nameOf } from '../utils/NameOf';
+import { DepositPlan } from './DepositPlan';
 import { CurrenciesDropdown } from './Dropdown/CurrenciesDropdown';
 import { RevocableDropdown } from './Dropdown/RevocableDropdown';
+import './ContractsForm.css';
 
 export const ContractsForm = () => {
     const { userId } = useParams();
     const [contract, setContract] = useState<CreateContractRequest>(Constants.Contracts.getNewItem());
     const [user, setUser] = useState<UserDTO>(Constants.Users.newItem);
+    const [plans, setPlans] = useState<DepositPlanDTO[]>();
 
     useEffect(() => {
-        async function loadUser() {
+        async function loadData() {
             if (!userId) return;
 
-            const response = await UsersService.getUser(+userId);
+            const [responseUsers, reponsePlans] = await Promise.all([UsersService.getUser(+userId), DeposistsService.getPlans()]);
             contract.user = +userId;
-            setUser(response);
+            setUser(responseUsers);
+            setPlans(reponsePlans);
         }
 
-        loadUser();
+        loadData();
     }, []);
 
     const onSubmit = async (e: any) => {
@@ -55,10 +60,8 @@ export const ContractsForm = () => {
         setContract({...contract, [property]: value});
     };
 
-    const onChangeRevocable = (e: any) => {
-        const value = e.target.value;
-
-        setContract({...contract, revocable: value == 1})
+    const onSelectPlan = (id: number) => {
+        setContract({...contract, depositPlan: id});
     }
 
     const fields: FieldData[] = [
@@ -79,29 +82,9 @@ export const ContractsForm = () => {
             element: <input type="date" value={DateUtils.dateFormat(contract.startDate)} onChange={e => onChangeDate(e, nameOf<CreateContractRequest>('startDate'))} />
         },
         {
-            label: 'Дата окончания',
-            element: <input type="date" value={DateUtils.dateFormat(contract.endDate)} onChange={e => onChangeDate(e, nameOf<CreateContractRequest>('endDate'))}/> 
-        },
-        {
-            label: 'Процент',
-            element: <input type="number" value={contract.percent} onChange={e => onChange(e, nameOf<CreateContractRequest>('percent'))}/>
-        },
-        {
             label: 'Суммма',
             element:  <input type="number" value={contract.sum} onChange={e => onChange(e, nameOf<CreateContractRequest>('sum'))}/>
         },
-        {
-            label: 'Валюта',
-            element: (
-                <CurrenciesDropdown 
-                    selectedId={contract.currency} 
-                    onChange={e => onChange(e, nameOf<CreateContractRequest>('currency'))}
-                />)
-        },
-        {
-            label: 'Отзывной',
-            element: <RevocableDropdown selectedId={contract.revocable ? 0 : 1} onChange={e => onChangeRevocable(e)}/>
-        }
     ];
 
     return ( 
@@ -112,7 +95,16 @@ export const ContractsForm = () => {
                             <td>{f.label}</td>
                             <td className={f.required ? 'required' : ''}>{f.element}</td>
                         </tr>)}
-                </table>
+            </table>
+            <table className="plans-table">
+                <tr><th>Имя</th><th>Отзывной?</th><th>Срок</th><th>Валюта</th><th>Процент</th><th>Онлайн</th></tr>
+                {plans ? 
+                plans.map(plan => 
+                    <DepositPlan key={plan.id} plan={plan} onSelect={onSelectPlan}/>
+                    ) : 
+                    ''
+                }
+            </table>
             <input type="submit" onClick={e => onSubmit(e)}/>
         </form>);
 }

@@ -26,12 +26,25 @@ namespace BankAPI.Services
             this.accountsService = accountsService;
         }
 
-        public void Create(Contract contract, int userId)
+        public void Create(CreateContractRequest request)
         {
+            var plan = this.db.DepositsPlans.Find(request.DepositPlan);
+
+            var contract = new Contract()
+            {
+                StartDate = request.StartDate,
+                EndDate = request.StartDate.AddDays(plan.Duration),
+                Sum = request.Sum,
+                Percent = plan.Percent,
+                Currency = plan.Currency,
+                Revocable = plan.Revocable,
+                DepositPlan = request.DepositPlan,
+            };
+
             this.db.Contracts.Add(contract);
             this.db.SaveChanges();
 
-            this.accountsService.AddDepositAccounts(contract, userId);
+            this.accountsService.AddDepositAccounts(contract, request.User);
 
             var mainAccount = contract.Accounts.FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.Current);
 
@@ -118,6 +131,8 @@ namespace BankAPI.Services
             this.transactionsService.CommitTransaction(creditAccount, cashAccount, creditAccount.Balance.Value);
 
             this.transactionsService.WithdrawFromCashRegister(totalSum);
+
+            contract.Sum = 0;
         }
 
         private void CommitPercents(Contract contract)

@@ -19,8 +19,10 @@ namespace BankDatabase
         public double Percent { get; set; }
         public byte Currency { get; set; }
         public bool Revocable { get; set; }
+        public int? DepositPlan { get; set; }
 
         public virtual Currency CurrencyNavigation { get; set; }
+        public virtual DepositsPlan DepositPlanNavigation { get; set; }
         public virtual ICollection<Account> Accounts { get; set; }
     }
 }

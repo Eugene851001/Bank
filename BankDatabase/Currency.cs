@@ -11,6 +11,7 @@ namespace BankDatabase
         {
             Accounts = new HashSet<Account>();
             Contracts = new HashSet<Contract>();
+            DepositsPlans = new HashSet<DepositsPlan>();
         }
 
         public byte Id { get; set; }
@@ -18,5 +19,6 @@ namespace BankDatabase
 
         public virtual ICollection<Account> Accounts { get; set; }
         public virtual ICollection<Contract> Contracts { get; set; }
+        public virtual ICollection<DepositsPlan> DepositsPlans { get; set; }
     }
 }

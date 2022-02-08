@@ -33,11 +33,8 @@ export const Constants = class {
             return {
                 user: 1,
                 startDate: new Date(),
-                endDate: new Date(),
                 sum: 10,
-                percent: 0,
-                currency: 1,
-                revocable: false,
+                depositPlan: 1,
             }
         }
     }

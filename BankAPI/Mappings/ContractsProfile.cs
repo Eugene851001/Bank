@@ -18,6 +18,9 @@ namespace BankAPI.Mappings
             CreateMap<Contract, DepositDemo>();
 
             CreateMap<Contract, DepositDTO>();
+
+            CreateMap<DepositsPlan, DepositPlanDTO>();
+                //.ForMember(nameof(DepositPlanDTO.Name), opt => opt.MapFrom(p => p.NameNavigation.Name));
         }
     }
 }

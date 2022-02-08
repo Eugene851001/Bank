@@ -58,11 +58,29 @@ namespace BankAPI.Controllers
             return Ok(accounts);
         }
 
+        [Route("Plans")]
+        [HttpGet]
+        public ActionResult GetPlans()
+        {
+
+            DepositPlanDTO[] plans = this.db.DepositsPlans
+                .Select(plan => this.mapper.Map<DepositPlanDTO>(plan))
+                .ToArray();
+
+            for (int i = 0; i < plans.Length; i++)
+            {
+                var plan = this.db.DepositsPlans.Find(plans[i].Id);
+                plans[i].Name = plan.NameNavigation.Name;
+                plans[i].Currency = plan.CurrencyNavigation.Code;
+            }
+
+            return Ok(plans);
+        }
+
         [HttpPost]
         public ActionResult Add([FromBody] CreateContractRequest request)
         {
-            var contract = this.mapper.Map<Contract>(request);
-            _deposistsService.Create(contract, request.User);
+            _deposistsService.Create(request);
 
             return Ok();
         }

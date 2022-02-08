@@ -24,6 +24,8 @@ namespace BankDatabase
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
         public virtual DbSet<DepositType> DepositTypes { get; set; }
+        public virtual DbSet<DepositsName> DepositsNames { get; set; }
+        public virtual DbSet<DepositsPlan> DepositsPlans { get; set; }
         public virtual DbSet<Disability> Disabilities { get; set; }
         public virtual DbSet<MaritalStatus> MaritalStatuses { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
@@ -123,6 +125,8 @@ namespace BankDatabase
             {
                 entity.HasIndex(e => e.Currency, "IXFK_Contracts_Currencies");
 
+                entity.HasIndex(e => e.DepositPlan, "IXFK_Contracts_DepositsPlans");
+
                 entity.Property(e => e.EndDate).HasColumnType("date");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
@@ -134,6 +138,11 @@ namespace BankDatabase
                     .HasForeignKey(d => d.Currency)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Contracts_Currencies");
+
+                entity.HasOne(d => d.DepositPlanNavigation)
+                    .WithMany(p => p.Contracts)
+                    .HasForeignKey(d => d.DepositPlan)
+                    .HasConstraintName("FK_Contracts_DepositsPlans");
             });
 
             modelBuilder.Entity<Country>(entity =>
@@ -155,6 +164,36 @@ namespace BankDatabase
                     .HasMaxLength(3)
                     .IsUnicode(false)
                     .IsFixedLength(true);
+            });
+
+            modelBuilder.Entity<DepositsName>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<DepositsPlan>(entity =>
+            {
+                entity.HasIndex(e => e.Currency, "IXFK_DepositsPlans_Currencies");
+
+                entity.HasIndex(e => e.Name, "IXFK_DepositsPlans_DepositsNames");
+
+                entity.Property(e => e.MinValue).HasColumnType("money");
+
+                entity.HasOne(d => d.CurrencyNavigation)
+                    .WithMany(p => p.DepositsPlans)
+                    .HasForeignKey(d => d.Currency)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DepositsPlans_Currencies");
+
+                entity.HasOne(d => d.NameNavigation)
+                    .WithMany(p => p.DepositsPlans)
+                    .HasForeignKey(d => d.Name)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_DepositsPlans_DepositsNames");
             });
 
             modelBuilder.Entity<Disability>(entity =>

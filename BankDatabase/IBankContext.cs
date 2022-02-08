@@ -14,6 +14,8 @@ namespace BankDatabase
         public DbSet<Country> Countries { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<DepositType> DepositTypes { get; set; }
+        public DbSet<DepositsName> DepositsNames { get; set; }
+        public DbSet<DepositsPlan> DepositsPlans { get; set; }
         public DbSet<Disability> Disabilities { get; set; }
         public DbSet<MaritalStatus> MaritalStatuses { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
