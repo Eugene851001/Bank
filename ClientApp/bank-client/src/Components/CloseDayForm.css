@@ -1,0 +1,31 @@
+.close-controls {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-buttons {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+.close-buttons > input {
+    background-color: #0833a7;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    border-radius: 10%;
+    margin-left:10px;
+}
+
+.close-buttons > input:hover {
+    cursor: pointer;
+}

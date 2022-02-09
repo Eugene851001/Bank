@@ -8,6 +8,11 @@ import { CloseDayFrom } from "./CloseDayForm";
 import { PaymentDTO } from "../Models/PaymentDTO";
 import { Payments } from "./Payments";
 import { DepositDTO } from "../Models/DepositDTO";
+import { AccountsView } from "./AccountsView";
+import { Link } from "react-router-dom";
+import './Deposit.css';
+import { DateUtils } from "../utils/DateUtils";
+import { AccountsService } from "../Services/AccountsService";
 
 export const Deposit = () => {
 
@@ -21,12 +26,13 @@ export const Deposit = () => {
     async function loadData() {
         if (!depositId) return;
 
-        const [responseAccounts, responseDeposit] = await Promise.all([
+        const [bankAccount, responseAccounts, responseDeposit] = await Promise.all([
+            AccountsService.getBankAccount(),
             DeposistsService.getAccounts(+depositId),
             DeposistsService.getSignle(+depositId),
         ]);
 
-        setAccounts(responseAccounts);
+        setAccounts([...responseAccounts, bankAccount]);
         setDeposit(responseDeposit);
     }
 
@@ -43,6 +49,7 @@ export const Deposit = () => {
         
         if (response.status == 200) {
             alert('Operation has been performed');
+            loadData();
         } else {
             const errorInfo = await  response.json();
             alert(`Somethig went wrong: ${errorInfo.message}`)
@@ -58,6 +65,7 @@ export const Deposit = () => {
 
         if (response.status == 200) {
             alert('Operation has been performed');
+            loadData();
         } else {
             const errorInfo = await  response.json();
             alert(`Something went wrong: ${errorInfo.message}`);
@@ -75,21 +83,34 @@ export const Deposit = () => {
 
     return (
         <>
-            {accounts ? 
-                <ul>
-                   {accounts.map(ac => 
-                   <li>
-                       <Account {...ac} />
-                   </li>)}
-                </ul>
-            : <p>Loading accounts...</p>}
-            {report ? <Payments payments={report}/> : ''}
-            <CloseDayFrom onClose={loadData}/>
-            {deposit ? 
-            <p>{deposit.startDate}-{deposit.endDate}</p> : ''}
-            <button onClick={e => onWithdrawPercents(e)}>Снять проценты</button>
-            <button onClick={(e => onCloseDeposit(e))}>Закрыть депозит</button>
-            <button onClick={onGenerateReport}>Сгенерировать отчёт</button>
+            <Link to="/deposits">Депозиты</Link>
+            <div className="deposit-info">
+                <div>
+                    {deposit ? <>
+                        <p>Дата начала: {DateUtils.dateFormat(deposit.startDate)}</p> 
+                        <p>Дата окончания: {DateUtils.dateFormat(deposit.endDate)}</p>
+                        <p>{deposit.revocable ? 'Отзывной' : 'Безотзывной'}</p>
+                        <p>Сумма: {deposit.sum}</p>
+                        <p>Проценты: {deposit.percent}</p>
+                    </>
+                    : ''}
+                    {accounts ? 
+                    <>
+                        <h2>Счета</h2>
+                        <AccountsView accounts={accounts}/>
+                    </>
+                    : <p>Loading accounts...</p>}
+                    {report ?<><h2>Платежи</h2><Payments payments={report}/></> : ''}
+                    <div className="deposit-close-day">
+                        <CloseDayFrom onClose={loadData}/>
+                    </div>
+                    <div className="deposit-buttons">
+                        <button onClick={e => onWithdrawPercents(e)}>Снять проценты</button>
+                        <button onClick={(e => onCloseDeposit(e))}>Закрыть депозит</button>
+                        <button onClick={onGenerateReport}>Сгенерировать отчёт</button>
+                    </div>
+                </div>  
+            </div>
         </>
     );
 }

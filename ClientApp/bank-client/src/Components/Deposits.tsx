@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { DepositDemo } from "../Models/DepositDemo";
 import { DeposistsService } from "../Services/DeposistsService";
+import { DateUtils } from "../utils/DateUtils";
 
 export const Deposits = () => {
     const [deposits, setDeposits] = useState<DepositDemo[]>();
@@ -22,7 +23,7 @@ export const Deposits = () => {
                 {deposits.map(deposit => 
                     <li>
                        <Link to={`/Deposits/${deposit.id}`}>
-                        {deposit.id}: {deposit.startDate}-{deposit.endDate}
+                        {deposit.id}: {DateUtils.dateFormat(deposit.startDate)}-{DateUtils.dateFormat(deposit.endDate)}
                        </Link>
                     </li>)}
             </ul>

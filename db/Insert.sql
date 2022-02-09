@@ -32,9 +32,27 @@ INSERT INTO DepositsPlans ([Name], [Currency], [Duration], [Revocable], [Percent
 (3, 2, 24 * 30, 0, 3.50, 1) 
 
 
-INSERT INTO CreditObject ([Name]) VALUES ('Automobiles'), ('Houses'), ('Personal');
+INSERT INTO CreditsObjects ([Name]) VALUES ('Automobiles'), ('Houses'), ('Personal');
 
 
+INSERT INTO CreditsNames ([Name]) VALUES 
+('NISSAN'),
+('Мультимоторс'),
+('White Sales'),
+('План Б')
+
+SELECT * FROM CreditPlans;
+
+INSERT INTO CreditPlans ([Duration], [Percent], [Name], [Object], [MinValue], [Currency], [Annuity]) VALUES
+(365, 20.38, 4, 3, 100000, 1, 1),
+(365, 0.01, 1, 1, 3000, 1,  1),
+(36 * 30, 15.99, 1, 1, 3000, 1, 0)
+
+INSERT INTO SystemVariables ([CurrentDate]) VALUES ('07-02-2022')
+
+UPDATE SystemVariables SET CurrentDate='02-07-2022'
+
+SELECT * FROM SystemVariables;
 
 SELECT * FROM Users
 
@@ -49,5 +67,7 @@ SELECT * FROM Accounts;
 SELECT * FROM Transactions;
 
 SELECT * FROM Deposits;
+
+SELECT * FROM CreditPlans;
 
 DELETE FROM Accounts WHERE Id > 1003 AND Id < 1006

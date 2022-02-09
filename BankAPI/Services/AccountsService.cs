@@ -1,5 +1,6 @@
 ﻿using BankAPI.DTO.Requests;
 using BankAPI.Helpers;
+using BankAPI.Services.Model;
 using BankDatabase;
 using System;
 using System.Collections.Generic;
@@ -33,30 +34,36 @@ namespace BankAPI.Services
             return $"{code}{guid.ToString().Substring(0, 9)}";
         }
 
-        public void AddDepositAccounts(Deposit contract, int userId)
+        public AddedAccounts AddDepositAccounts(byte currency, int userId) =>
+            AddContractAccounts(Constants.Accounts.Passive, currency, userId);
+
+        public AddedAccounts AddCreditsAccounts(byte currency, int userId) =>
+            AddContractAccounts(Constants.Accounts.Active, currency, userId);
+
+        private AddedAccounts AddContractAccounts(byte activity, byte currency, int userId)
         {
             var accountCurrent = new Account()
             {
-                Owner = userId,
-                Active = Constants.Accounts.Passive,
+                Owner = userId, 
+                Active = activity,
                 AccountType = Constants.AccountTypes.Current,
                 Credit = 0,
                 Debit = 0,
                 Number = GetAccountNumber(Constants.AccountTypes.Current),
                 Code = "",
-                Currency = contract.Currency,
+                Currency = currency,
             };
 
             var accountPercent = new Account()
             {
                 Owner = userId,
-                Active = Constants.Accounts.Passive,
+                Active = activity,
                 AccountType = Constants.AccountTypes.Credit,
                 Credit = 0,
                 Debit = 0,
                 Number = GetAccountNumber(Constants.AccountTypes.Credit),
                 Code = "",
-                Currency = contract.Currency,
+                Currency = currency,
             };
 
             //TODO: improve trigger to work when add multiple values
@@ -66,10 +73,11 @@ namespace BankAPI.Services
             this.db.Accounts.Add(accountPercent);
             this.db.SaveChanges();
 
-            contract.MainAccount = accountCurrent.Id;
-            contract.PercentAccount = accountPercent.Id;
-
-            this.db.SaveChanges();
+            return new AddedAccounts() 
+            { 
+                MainAccountId = accountCurrent.Id, 
+                PercentAccountId = accountPercent.Id 
+            };
         }
     }
 }

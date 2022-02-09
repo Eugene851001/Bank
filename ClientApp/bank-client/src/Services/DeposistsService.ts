@@ -42,10 +42,6 @@ export const DeposistsService = class {
         return fetch('/api/deposits/plans').then(response => response.json());
     }
 
-    public static closeDay(request: CloseDayRequest) {
-        return DeposistsService.performPutRequest('closeDay', request);
-    }
-
     public static withdrawPercents(request: WithdrawPercentsRequest) {
         return DeposistsService.performPutRequest('withdrawPercents', request);
     }

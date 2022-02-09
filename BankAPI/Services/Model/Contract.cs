@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BankAPI.DTO.Requests
+namespace BankAPI.Services.Model
 {
-    public class CloseDepositRequest
+    public class Contract
     {
-        public int ContractId { get; set; }
     }
 }

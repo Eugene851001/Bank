@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BankAPI.Services
 {
-    public class DepositsService
+    public class DepositsService: ContractService
     {
         private readonly IBankContext db;
         private readonly AccountsService accountsService;
@@ -40,8 +40,10 @@ namespace BankAPI.Services
                 DepositPlan = request.DepositPlan,
             };
 
-            this.accountsService.AddDepositAccounts(contract, request.User);
+            var accounts = this.accountsService.AddDepositAccounts(contract.Currency, request.User);
 
+            contract.MainAccount = accounts.MainAccountId;
+            contract.PercentAccount = accounts.PercentAccountId;
             this.db.Deposits.Add(contract);
             this.db.SaveChanges();
 
@@ -56,31 +58,34 @@ namespace BankAPI.Services
             this.transactionsService.CommitTransaction(mainAccount, bankAccount, contract.Sum);
         }
 
-        public void CloseBankDay(DateTime currentDate)
+        public override void CloseBankDay()
         {
+            var system = this.db.SystemVariables.Find((byte)1);
+            var currentDate = system.CurrentDate;
+
             var contracts = this.db.Deposits
                 .Where(contract => contract.StartDate <= currentDate
-                    && contract.EndDate >= currentDate)
+                    && contract.EndDate >= currentDate
+                    && contract.Sum > 0)
                 .ToArray();
 
             foreach (var contact in contracts)
             {
                 CommitPercents(contact);
 
-                if ((currentDate - contact.StartDate).Days == Constants.Intervals.Month)
+                if (currentDate != contact.StartDate &&  
+                    (currentDate - contact.StartDate).Days % Constants.Intervals.Month == 0)
                 {
                     WithdrawCash(contact);
                 }
             }
-
-            var system = this.db.SystemVariables.Find(1);
-
-            system.CurrentDate = system.CurrentDate.AddDays(1);
-            this.db.SaveChanges();
         }
 
-        public void WithdrawPercents(int depositId, DateTime currentDate)
+        public void WithdrawPercents(int depositId)
         {
+            var system = this.db.SystemVariables.Find((byte)1);
+            var currentDate = system.CurrentDate;
+
             var contract = this.db.Deposits.Find(depositId);
 
             var account = contract.PercentAccountNavigation;
@@ -104,8 +109,11 @@ namespace BankAPI.Services
         }
 
 
-        public void CloseDeposit(int contractId, DateTime currentDate)
+        public void CloseDeposit(int contractId)
         {
+            var system = this.db.SystemVariables.Find((byte)1);
+            var currentDate = system.CurrentDate;
+
             var contract = this.db.Deposits.Find(contractId);
 
             if (!contract.Revocable && contract.EndDate > currentDate)
@@ -134,6 +142,7 @@ namespace BankAPI.Services
             this.transactionsService.WithdrawFromCashRegister(totalSum);
 
             contract.Sum = 0;
+            this.db.SaveChanges();
         }
 
         private void CommitPercents(Deposit contract)

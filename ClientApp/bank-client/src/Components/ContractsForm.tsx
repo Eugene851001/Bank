@@ -13,6 +13,8 @@ import { nameOf } from '../utils/NameOf';
 import { DepositPlan } from './DepositPlan';
 import { CurrenciesDropdown } from './Dropdown/CurrenciesDropdown';
 import { RevocableDropdown } from './Dropdown/RevocableDropdown';
+import { Link } from 'react-router-dom';
+import './UserDetailsView.style.css';
 import './ContractsForm.css';
 
 export const ContractsForm = () => {
@@ -88,23 +90,28 @@ export const ContractsForm = () => {
     ];
 
     return ( 
-        <form>
-            <table>
-                    {fields.map(f => 
-                        <tr>
-                            <td>{f.label}</td>
-                            <td className={f.required ? 'required' : ''}>{f.element}</td>
-                        </tr>)}
-            </table>
-            <table className="plans-table">
-                <tr><th>Имя</th><th>Отзывной?</th><th>Срок</th><th>Валюта</th><th>Процент</th><th>Онлайн</th></tr>
-                {plans ? 
-                plans.map(plan => 
-                    <DepositPlan key={plan.id} plan={plan} onSelect={onSelectPlan}/>
-                    ) : 
-                    ''
-                }
-            </table>
-            <input type="submit" onClick={e => onSubmit(e)}/>
-        </form>);
+        <>
+            <Link to="/">Пользователи</Link>
+            <form className='main-form'>
+                <table>
+                        {fields.map(f => 
+                            <tr>
+                                <td>{f.label}</td>
+                                <td className={f.required ? 'required' : ''}>{f.element}</td>
+                            </tr>)}
+                </table>
+                <h2>Программы</h2>
+                <table className="plans-table">
+                    <tr><th>Имя</th><th>Отзывной?</th><th>Срок</th><th>Валюта</th><th>Процент</th><th>Онлайн</th></tr>
+                    {plans ? 
+                    plans.map(plan => 
+                        <DepositPlan key={plan.id} plan={plan} onSelect={onSelectPlan}/>
+                        ) : 
+                        ''
+                    }
+                </table>
+                <input type="submit" className="submit-button" value="Оформить" onClick={e => onSubmit(e)}/>
+            </form>
+        </>
+        );
 }

@@ -22,7 +22,7 @@ namespace BankAPI.Services
 
             if (!contract.Revocable)
             {
-                result.Add(contract.EndDate, contract.Sum + (decimal)contract.Percent * contract.Sum);
+                result.Add(contract.EndDate, contract.Sum + (decimal)contract.Percent * contract.Sum / 100);
                 return result;
             }
 
@@ -48,5 +48,52 @@ namespace BankAPI.Services
 
             return result;
         }
+
+        private static Dictionary<DateTime, decimal> GenerateCreditReport(Credit credit)
+        {
+            var result = new Dictionary<DateTime, decimal>();
+
+            DateTime currentDate = credit.StartDate.AddDays(Constants.Intervals.Month);
+
+            while (currentDate <= credit.EndDate)
+            {
+                decimal sum = credit.Annuity ? 
+                    GetTotalSum(credit, Constants.Intervals.Month) 
+                    : GetPercentSum(credit, Constants.Intervals.Month);
+
+                result.Add(currentDate, sum);
+
+                currentDate = currentDate.AddDays(Constants.Intervals.Month);
+            }
+
+            int remainDays = (credit.EndDate - credit.StartDate).Days % Constants.Intervals.Month;
+
+            if (remainDays == 0)
+            {
+                if (!credit.Annuity)
+                {
+                    result.Add(credit.EndDate, credit.Sum);
+                }
+            }
+            else
+            {
+                decimal sum = credit.Annuity ?
+                    GetTotalSum(credit, remainDays)
+                    : GetPercentSum(credit, remainDays) + credit.Sum;
+
+                result.Add(credit.EndDate, sum);
+            }
+
+            return result;
+        }
+
+        private static decimal GetTotalSum(Credit credit, int days) =>
+            (credit.Sum * (decimal)credit.Percent / 100 + credit.Sum) * days /
+                (credit.EndDate - credit.StartDate).Days;
+
+        private static decimal GetPercentSum(Credit credit, int days) =>
+            (credit.Sum * (decimal)credit.Percent / 100) * days /
+                (credit.EndDate - credit.StartDate).Days;
+
     }
 }

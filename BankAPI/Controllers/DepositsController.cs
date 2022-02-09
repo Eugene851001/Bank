@@ -13,23 +13,20 @@ namespace BankAPI.Controllers
 {
     public class DepositsController: ApiControllerBase
     {
-        private readonly AccountsService _accountsService;
         private readonly DepositsService _deposistsService;
 
         public DepositsController(
             IBankContext db, 
-            AccountsService accountsService,
             DepositsService depositsService) : base(db)
         {
-            _accountsService = accountsService;
             _deposistsService = depositsService;
         }
 
         [HttpGet]
         public ActionResult GetAll()
         {
-            DepositDemo[] deposits = this.db.Deposits
-                .Select(contract => this.mapper.Map<DepositDemo>(contract))
+            DepositDTO[] deposits = this.db.Deposits
+                .Select(contract => this.mapper.Map<DepositDTO>(contract))
                 .ToArray();
 
             return Ok(deposits);
@@ -88,29 +85,13 @@ namespace BankAPI.Controllers
             return Ok();
         }
 
-        [Route("CloseDay")]
-        [HttpPut]
-        public ActionResult CloseBankDay([FromBody] CloseDayRequest request)
-        {
-            try
-            {
-                _deposistsService.CloseBankDay(request.CurrentDate);
-            }
-            catch(Exception e)
-            {
-                return BadRequest(new ErrorDTO() { Message = e.Message });
-            }
-
-            return Ok();
-        }
-
         [Route("WithdrawPercents")]
         [HttpPut]
         public ActionResult WithdrawPercents([FromBody] WithdrawRequest request)
         {
             try
             {
-                _deposistsService.WithdrawPercents(request.DepositId, request.CurrentDate);
+                _deposistsService.WithdrawPercents(request.DepositId);
             }
             catch(Exception e)
             {
@@ -126,7 +107,7 @@ namespace BankAPI.Controllers
         {
             try
             {
-                _deposistsService.CloseDeposit(request.ContractId, request.CurrentDate);
+                _deposistsService.CloseDeposit(request.ContractId);
             }
             catch (Exception e)
             {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AccountDTO } from "../Models/AccountDTO";
 import { AccountsService } from "../Services/AccountsService";
 import { Account } from "./Account";
+import { AccountsView } from "./AccountsView";
 import { CloseDayFrom } from "./CloseDayForm";
 
 export const Accounts = () => {
@@ -20,9 +21,7 @@ export const Accounts = () => {
 
     return accounts ? 
         <>
-            <ul>
-                {accounts.map(ac => <li><Account {...ac} /></li>)}
-            </ul>
+            <AccountsView accounts={accounts}/>
             <CloseDayFrom onClose={loadData}/>
         </>
         : <p>Loading...</p>;

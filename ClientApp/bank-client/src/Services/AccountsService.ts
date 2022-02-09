@@ -9,4 +9,8 @@ export const AccountsService = class {
     public static getUserAccounts(userId: number) {
         return fetch(`/api/accounts/${userId}`).then(response => response.json());
     }
+
+    public static getBankAccount() {
+        return fetch('/api/accounts/bank').then(response => response.json());
+    }
 }

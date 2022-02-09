@@ -1,0 +1,33 @@
+.deposit-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.deposit-buttons {
+    display: flex;
+    display: row;
+}
+
+.deposit-close-day {
+    padding-left: 20%;
+}
+
+.deposit-buttons > button {
+    margin-top: 30px;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 10%;
+    margin-left: 10px;
+}
+
+.deposit-buttons > button:hover {
+    cursor: pointer;
+}

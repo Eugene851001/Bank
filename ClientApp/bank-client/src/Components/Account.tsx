@@ -7,5 +7,16 @@ export interface AccountProps extends AccountDTO {
 
 export const Account = (props: AccountProps) => {
 
-    return (<p>Number: {props.number} Balance: {props.balance} UserId {props.owner}</p>);
+    return (
+    <tr>
+        <td>
+            {props.number}
+        </td>
+        <td>
+            {props.balance}
+        </td>
+        <td>
+            {props.owner ? 'Пользовательский' : 'Системный'}
+        </td>
+    </tr>);
 }

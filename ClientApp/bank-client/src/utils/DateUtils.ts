@@ -1,6 +1,7 @@
 export const DateUtils = class {
 
     public static dateFormat(value: Date) {
+        value = new Date(value);
         if (!value.getMonth) {
             return ;
         }

@@ -36,5 +36,17 @@ namespace BankAPI.Controllers
 
             return Ok(accounts);
         }
+
+        [HttpGet("Bank")]
+        public ActionResult GetBankAccount()
+        {
+            Account bankAccount = this.db.Accounts
+                .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.DevelopmentFund);
+
+            var result = this.mapper.Map<AccountDTO>(bankAccount);
+
+            return Ok(result);
+        }
+
     }
 }
