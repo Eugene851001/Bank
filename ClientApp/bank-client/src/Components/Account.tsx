@@ -7,6 +7,13 @@ export interface AccountProps extends AccountDTO {
 
 export const Account = (props: AccountProps) => {
 
+    const typeToName = new Map<number, string>([
+        [1, 'Основной'],
+        [2, 'Кредитный'],
+        [3, 'Касса банка'],
+        [4, 'Фонд развития банка'],
+    ]);
+
     return (
     <tr>
         <td>
@@ -16,7 +23,7 @@ export const Account = (props: AccountProps) => {
             {props.balance}
         </td>
         <td>
-            {props.owner ? 'Пользовательский' : 'Системный'}
+            {typeToName.get(props.accountType)}
         </td>
     </tr>);
 }

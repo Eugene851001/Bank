@@ -1,20 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BankAPI.Helpers;
 using BankDatabase;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BankAPI.Services
 {
     public class ReportsService
     {
-        public static Dictionary<DateTime, decimal> GenerateReportDay(Deposit contract) =>
-            GenerateReportWithInterval(1, contract);
 
-        public static Dictionary<DateTime, decimal> GenerateReportMonth(Deposit contract) =>
+        public static Dictionary<DateTime, decimal> GenerateDepositReport(Deposit contract) =>
             GenerateReportWithInterval(Constants.Intervals.Month, contract);
+
+        public static Dictionary<DateTime, decimal> GenerateCreditReport(Credit credit)
+        {
+            var result = new Dictionary<DateTime, decimal>();
+
+            DateTime currentDate = credit.StartDate.AddDays(Constants.Intervals.Month);
+            int totalDays = (credit.EndDate - credit.StartDate).Days;
+            decimal mainAccountSum = 0;
+
+            while (currentDate <= credit.EndDate)
+            { 
+                decimal sum = (credit.Sum) * Constants.Intervals.Month / totalDays;
+                decimal tempSum = sum;
+                if (credit.Annuity)
+                {
+                    sum += credit.Sum * (decimal)credit.Percent * Constants.Intervals.Month / (100 * totalDays);
+                }
+                else
+                {
+                    sum += (credit.Sum - mainAccountSum) * (decimal)credit.Percent * Constants.Intervals.Month / (100 * totalDays);
+                }
+
+                mainAccountSum += tempSum;
+
+                result.Add(currentDate, sum);
+                currentDate = currentDate.AddDays(Constants.Intervals.Month);
+            }
+
+            int remainDays = (credit.EndDate - credit.StartDate).Days % Constants.Intervals.Month;
+
+
+            if (remainDays != 0)
+            {
+                decimal sum = (credit.Sum) * remainDays / totalDays;
+                if (credit.Annuity)
+                {
+                    sum += credit.Sum * (decimal)credit.Percent * remainDays / (100 * totalDays);
+                }
+                else
+                {
+                    sum += (credit.Sum - mainAccountSum) * (decimal)credit.Percent * remainDays / (100 * totalDays);
+                }
+
+                result.Add(credit.EndDate, sum);
+            }
+
+            return result;
+        }
 
         private static Dictionary<DateTime, decimal> GenerateReportWithInterval(int daysInterval, Deposit contract)
         {
@@ -48,52 +91,6 @@ namespace BankAPI.Services
 
             return result;
         }
-
-        private static Dictionary<DateTime, decimal> GenerateCreditReport(Credit credit)
-        {
-            var result = new Dictionary<DateTime, decimal>();
-
-            DateTime currentDate = credit.StartDate.AddDays(Constants.Intervals.Month);
-
-            while (currentDate <= credit.EndDate)
-            {
-                decimal sum = credit.Annuity ? 
-                    GetTotalSum(credit, Constants.Intervals.Month) 
-                    : GetPercentSum(credit, Constants.Intervals.Month);
-
-                result.Add(currentDate, sum);
-
-                currentDate = currentDate.AddDays(Constants.Intervals.Month);
-            }
-
-            int remainDays = (credit.EndDate - credit.StartDate).Days % Constants.Intervals.Month;
-
-            if (remainDays == 0)
-            {
-                if (!credit.Annuity)
-                {
-                    result.Add(credit.EndDate, credit.Sum);
-                }
-            }
-            else
-            {
-                decimal sum = credit.Annuity ?
-                    GetTotalSum(credit, remainDays)
-                    : GetPercentSum(credit, remainDays) + credit.Sum;
-
-                result.Add(credit.EndDate, sum);
-            }
-
-            return result;
-        }
-
-        private static decimal GetTotalSum(Credit credit, int days) =>
-            (credit.Sum * (decimal)credit.Percent / 100 + credit.Sum) * days /
-                (credit.EndDate - credit.StartDate).Days;
-
-        private static decimal GetPercentSum(Credit credit, int days) =>
-            (credit.Sum * (decimal)credit.Percent / 100) * days /
-                (credit.EndDate - credit.StartDate).Days;
 
     }
 }

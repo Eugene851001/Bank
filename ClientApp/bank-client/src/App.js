@@ -5,10 +5,14 @@ import {BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { UserDetails } from './Components/UserDetails';
 import { UserDetailsView } from './Components/UserDetailsView';
 import { Accounts } from './Components/Accounts';
-import { ContractsForm } from './Components/ContractsForm';
 import { Deposits } from './Components/Deposits';
 import { Deposit } from './Components/Deposit';
 import { CurrentDateProvider } from './Contexts/CurrentDateContext';
+import { DepositForm } from './Components/DepositForm';
+import { CreditForm } from './Components/CreditForm';
+import {Credits} from './Components/Credits';
+import {Credit} from './Components/Credit';
+
 
 function App() {
   return (
@@ -19,9 +23,12 @@ function App() {
           <Route path="/users/:userId" element={<UserDetails/>}/>
           <Route path="/users/create" element={<UserDetailsView/>}/>
           <Route path="/accounts" element={<Accounts/>}/>
-          <Route path="/contracts/:userId" element={<ContractsForm/>}/>
+          <Route path="/depositForm/:userId" element={<DepositForm/>}/>
+          <Route path="/creditForm/:userId" element={<CreditForm />}/>
           <Route path="/deposits" element={<Deposits />}/>
           <Route path="/deposits/:depositId" element={<Deposit />}/>
+          <Route path="/credits" element={<Credits/>}/>
+          <Route path="/credits/:creditId" element={<Credit/>}/>
         </Routes>
       </Router>
     </CurrentDateProvider>  

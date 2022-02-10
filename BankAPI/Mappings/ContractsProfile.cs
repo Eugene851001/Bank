@@ -15,12 +15,15 @@ namespace BankAPI.Mappings
         {
             CreateMap<CreateContractRequest, Deposit>();
 
-            CreateMap<Deposit, DepositDemo>();
-
             CreateMap<Deposit, DepositDTO>();
 
             CreateMap<DepositsPlan, DepositPlanDTO>();
-                //.ForMember(nameof(DepositPlanDTO.Name), opt => opt.MapFrom(p => p.NameNavigation.Name));
+            //.ForMember(nameof(DepositPlanDTO.Name), opt => opt.MapFrom(p => p.NameNavigation.Name));
+
+            CreateMap<Credit, CreditDTO>();
+
+            CreateMap<CreditPlan, CreditPlanDTO>();
+              //  .ForMember(nameof(CreditPlanDTO.Object), opt => opt.MapFrom(p => p.ObjectNavigation.Name));
         }
     }
 }

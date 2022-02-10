@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useCurrentDate } from '../Contexts/CurrentDateContext';
 import { BankService } from '../Services/BankService';
-import { DeposistsService } from '../Services/DeposistsService';
 import { SystemService } from '../Services/SystemService';
 import { DateUtils } from '../utils/DateUtils';
 import './CloseDayForm.css';

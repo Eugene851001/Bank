@@ -44,9 +44,10 @@ INSERT INTO CreditsNames ([Name]) VALUES
 SELECT * FROM CreditPlans;
 
 INSERT INTO CreditPlans ([Duration], [Percent], [Name], [Object], [MinValue], [Currency], [Annuity]) VALUES
-(365, 20.38, 4, 3, 100000, 1, 1),
-(365, 0.01, 1, 1, 3000, 1,  1),
-(36 * 30, 15.99, 1, 1, 3000, 1, 0)
+--(365, 20.38, 4, 3, 100000, 1, 1),
+--(365, 0.01, 1, 1, 3000, 1,  1),
+--(36 * 30, 15.99, 1, 1, 3000, 1, 0)
+(30 * 12, 20.38, 4, 3, 3000, 1, 0)
 
 INSERT INTO SystemVariables ([CurrentDate]) VALUES ('07-02-2022')
 
@@ -68,6 +69,14 @@ SELECT * FROM Transactions;
 
 SELECT * FROM Deposits;
 
+SELECT * FROM Credits;
+
 SELECT * FROM CreditPlans;
 
+SELECT * FROM CreditsObjects;
+
 DELETE FROM Accounts WHERE Id > 1003 AND Id < 1006
+
+DELETE FROM Deposits;
+
+DELETE FROM Credits;

@@ -11,7 +11,7 @@ using BankAPI.DTO;
 
 namespace BankAPI.Controllers
 {
-    public class DepositsController: ApiControllerBase
+    public class DepositsController: ContractsController
     {
         private readonly DepositsService _deposistsService;
 
@@ -23,7 +23,7 @@ namespace BankAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAll()
+        public override ActionResult GetAll()
         {
             DepositDTO[] deposits = this.db.Deposits
                 .Select(contract => this.mapper.Map<DepositDTO>(contract))
@@ -34,7 +34,7 @@ namespace BankAPI.Controllers
 
         [Route("{id:int}")]
         [HttpGet]
-        public ActionResult GetSingle([FromRoute] int id)
+        public override ActionResult GetSingle([FromRoute] int id)
         {
             var contract = this.db.Deposits.Find(id);
 
@@ -45,7 +45,7 @@ namespace BankAPI.Controllers
 
         [Route("{id:int}/Accounts")]
         [HttpGet]
-        public ActionResult GetAccounts([FromRoute] int id)
+        public override ActionResult GetAccounts([FromRoute] int id)
         {
             var deposit = this.db.Deposits.Find(id);
             AccountDTO[] accounts = new [] 
@@ -60,7 +60,7 @@ namespace BankAPI.Controllers
 
         [Route("Plans")]
         [HttpGet]
-        public ActionResult GetPlans()
+        public override ActionResult GetPlans()
         {
 
             DepositPlanDTO[] plans = this.db.DepositsPlans
@@ -119,11 +119,11 @@ namespace BankAPI.Controllers
 
         [Route("{id:int}/report")]
         [HttpGet]
-        public ActionResult GetReport([FromRoute] int id)
+        public override ActionResult GetReport([FromRoute] int id)
         {
             var contract = this.db.Deposits.Find(id);
 
-            var report = ReportsService.GenerateReportMonth(contract);
+            var report = ReportsService.GenerateDepositReport(contract);
 
             PaymentDTO[] payments = report.Keys.Select(date => new PaymentDTO() { Date = date, Sum = report[date] }).ToArray();
 

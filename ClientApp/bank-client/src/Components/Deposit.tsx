@@ -13,6 +13,10 @@ import { Link } from "react-router-dom";
 import './Deposit.css';
 import { DateUtils } from "../utils/DateUtils";
 import { AccountsService } from "../Services/AccountsService";
+import { UserDemo } from "../Models/UserDemo";
+import { UserDTO } from "../Models/UserDTO";
+import { UsersService } from "../Services/UsersService";
+import { ContractView } from "./ContractView";
 
 export const Deposit = () => {
 
@@ -20,6 +24,7 @@ export const Deposit = () => {
     const { depositId } = useParams();
     const [accounts, setAccounts] = useState<AccountDTO[]>();
     const [deposit, setDeposit] = useState<DepositDTO>();
+    const [user, setUser] = useState<UserDTO>()
 
     const [report, setReport] = useState<PaymentDTO[]>();
 
@@ -32,20 +37,23 @@ export const Deposit = () => {
             DeposistsService.getSignle(+depositId),
         ]);
 
+        if (!user) {
+            const responseUser = await UsersService.getUser(responseAccounts[1].owner);
+
+            setUser(responseUser);
+        }
+
         setAccounts([...responseAccounts, bankAccount]);
         setDeposit(responseDeposit);
     }
 
     useEffect(() => {
         loadData();
+
     }, []);
 
-    const onWithdrawPercents = async (e: any) => {
-        e.preventDefault();
-
-        if (!depositId || !accounts) return;
-        
-        const response = await DeposistsService.withdrawPercents({depositId: +depositId, currentDate})
+    const performOperation = async (operation: () => Promise<Response>) => {
+        const response = await operation();
         
         if (response.status == 200) {
             alert('Operation has been performed');
@@ -56,20 +64,20 @@ export const Deposit = () => {
         }
     }
 
+    const onWithdrawPercents = async (e: any) => {
+        e.preventDefault();
+
+        if (!depositId || !accounts) return;
+        
+        performOperation(() =>  DeposistsService.withdrawPercents({depositId: +depositId, currentDate}));
+    }
+
     const onCloseDeposit = async (e: any) => {
         e.preventDefault();
 
         if (!depositId) return;
 
-        const response = await DeposistsService.closeDeposit({contractId: +depositId, currentDate});
-
-        if (response.status == 200) {
-            alert('Operation has been performed');
-            loadData();
-        } else {
-            const errorInfo = await  response.json();
-            alert(`Something went wrong: ${errorInfo.message}`);
-        }
+        performOperation(() => DeposistsService.closeDeposit({contractId: +depositId, currentDate}));
     }
 
     const onGenerateReport = async (e: any) => {
@@ -86,24 +94,7 @@ export const Deposit = () => {
             <Link to="/deposits">Депозиты</Link>
             <div className="deposit-info">
                 <div>
-                    {deposit ? <>
-                        <p>Дата начала: {DateUtils.dateFormat(deposit.startDate)}</p> 
-                        <p>Дата окончания: {DateUtils.dateFormat(deposit.endDate)}</p>
-                        <p>{deposit.revocable ? 'Отзывной' : 'Безотзывной'}</p>
-                        <p>Сумма: {deposit.sum}</p>
-                        <p>Проценты: {deposit.percent}</p>
-                    </>
-                    : ''}
-                    {accounts ? 
-                    <>
-                        <h2>Счета</h2>
-                        <AccountsView accounts={accounts}/>
-                    </>
-                    : <p>Loading accounts...</p>}
-                    {report ?<><h2>Платежи</h2><Payments payments={report}/></> : ''}
-                    <div className="deposit-close-day">
-                        <CloseDayFrom onClose={loadData}/>
-                    </div>
+                    <ContractView user={user} contract={deposit} accounts={accounts} report={report} onCloseDay={loadData}/>
                     <div className="deposit-buttons">
                         <button onClick={e => onWithdrawPercents(e)}>Снять проценты</button>
                         <button onClick={(e => onCloseDeposit(e))}>Закрыть депозит</button>

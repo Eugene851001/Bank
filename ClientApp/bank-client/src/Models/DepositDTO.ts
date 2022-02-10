@@ -1,9 +1,5 @@
-export interface DepositDTO {
-    user: number;
-    startDate: Date;
-    endDate: Date;
-    sum: number;
-    percent: number;
-    currency: number;
+import { ContractDTO } from "./ContractDTO";
+
+export interface DepositDTO extends ContractDTO{
     revocable: boolean;
 }

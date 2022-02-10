@@ -34,7 +34,6 @@ export const Constants = class {
                 user: 1,
                 startDate: new Date(),
                 sum: 10,
-                depositPlan: 1,
             }
         }
     }

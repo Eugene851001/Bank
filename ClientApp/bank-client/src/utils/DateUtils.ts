@@ -6,6 +6,7 @@ export const DateUtils = class {
             return ;
         }
         
+        value.setHours(12);
         return value.toISOString?.().substring(0, 10);
     }
 

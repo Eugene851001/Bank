@@ -22,9 +22,9 @@ namespace BankDatabase
         public virtual DbSet<City> Cities { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Credit> Credits { get; set; }
-        public virtual DbSet<CreditObject> CreditObjects { get; set; }
         public virtual DbSet<CreditPlan> CreditPlans { get; set; }
         public virtual DbSet<CreditsName> CreditsNames { get; set; }
+        public virtual DbSet<CreditsObject> CreditsObjects { get; set; }
         public virtual DbSet<Currency> Currencies { get; set; }
         public virtual DbSet<Deposit> Deposits { get; set; }
         public virtual DbSet<DepositsName> DepositsNames { get; set; }
@@ -140,8 +140,6 @@ namespace BankDatabase
 
                 entity.HasIndex(e => e.Currency, "IXFK_Credits_Currencies");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.EndDate).HasColumnType("date");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
@@ -172,24 +170,21 @@ namespace BankDatabase
                     .HasConstraintName("FK_Credits_Accounts_03");
             });
 
-            modelBuilder.Entity<CreditObject>(entity =>
-            {
-                entity.ToTable("CreditObject");
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
             modelBuilder.Entity<CreditPlan>(entity =>
             {
                 entity.HasIndex(e => e.Object, "IXFK_CreditPlans_CreditObject");
 
                 entity.HasIndex(e => e.Name, "IXFK_CreditPlans_CreditsNames");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.HasIndex(e => e.Currency, "IXFK_CreditPlans_Currencies");
 
                 entity.Property(e => e.MinValue).HasColumnType("money");
+
+                entity.HasOne(d => d.CurrencyNavigation)
+                    .WithMany(p => p.CreditPlans)
+                    .HasForeignKey(d => d.Currency)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CreditPlans_Currencies");
 
                 entity.HasOne(d => d.NameNavigation)
                     .WithMany(p => p.CreditPlans)
@@ -205,10 +200,21 @@ namespace BankDatabase
 
             modelBuilder.Entity<CreditsName>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<CreditsObject>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Currency>(entity =>

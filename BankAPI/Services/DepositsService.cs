@@ -76,7 +76,12 @@ namespace BankAPI.Services
                 if (currentDate != contact.StartDate &&  
                     (currentDate - contact.StartDate).Days % Constants.Intervals.Month == 0)
                 {
-                    WithdrawCash(contact);
+                    WithdrawCashMonthly(contact);
+                }
+
+                if (currentDate == contact.EndDate)
+                {
+                    CloseDeposit(contact.Id);
                 }
             }
         }
@@ -121,6 +126,11 @@ namespace BankAPI.Services
                 throw new ArgumentException("You can not close deposit until it ends");
             }
 
+            if (contract.Sum == 0)
+            {
+                throw new ArgumentException("This deposit is alreday closed");
+            }
+
             var cashAccount = this.db.Accounts
                 .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.CashRegister);
 
@@ -134,11 +144,8 @@ namespace BankAPI.Services
             decimal totalSum = mainAccount.Balance.Value + creditAccount.Balance.Value;
 
             this.transactionsService.CommitTransaction(bankAccount, mainAccount, contract.Sum);
-
             this.transactionsService.CommitTransaction(mainAccount, cashAccount, mainAccount.Balance.Value);
-
             this.transactionsService.CommitTransaction(creditAccount, cashAccount, creditAccount.Balance.Value);
-
             this.transactionsService.WithdrawFromCashRegister(totalSum);
 
             contract.Sum = 0;
@@ -157,7 +164,7 @@ namespace BankAPI.Services
             this.transactionsService.CommitTransaction(bankAccount, percentAccount, sum);
         }
 
-        private void WithdrawCash(Deposit contract)
+        private void WithdrawCashMonthly(Deposit contract)
         {
             var cashAccount = this.db.Accounts
                 .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.CashRegister);

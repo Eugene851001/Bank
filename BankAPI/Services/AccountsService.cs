@@ -34,6 +34,12 @@ namespace BankAPI.Services
             return $"{code}{guid.ToString().Substring(0, 9)}";
         }
 
+        public Account GetBankAccount() =>
+            this.db.Accounts.FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.DevelopmentFund);
+
+        public Account GetCashAccount() =>
+            this.db.Accounts.FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.CashRegister);
+
         public AddedAccounts AddDepositAccounts(byte currency, int userId) =>
             AddContractAccounts(Constants.Accounts.Passive, currency, userId);
 

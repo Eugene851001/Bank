@@ -2,6 +2,7 @@ import { CreateContractRequest } from "../Models/CreateContractRequest"
 import { CloseDayRequest } from "../Models/CloseDayRequest";
 import { WithdrawPercentsRequest } from "../Models/WithdrawPercentsRequest";
 import { CloseDepositRequest } from "../Models/CloseDepositRequest";
+import { CreateDepositRequest } from "../Models/CreateDepositRequest";
 
 type DepositsOperation = 
     CloseDayRequest
@@ -11,7 +12,7 @@ type DepositsOperation =
 
 export const DeposistsService = class {
     
-    public static addContract(request: CreateContractRequest) {
+    public static addContract(request: CreateDepositRequest) {
         return fetch('/api/deposits', {
             method: 'POST', 
             headers: {

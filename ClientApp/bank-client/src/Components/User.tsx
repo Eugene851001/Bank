@@ -19,6 +19,8 @@ export const User = (props: UserProps) => {
         setIsDeleted(true);
     }
 
+    const constracts =  (userId: number) => ``;
+
     return !isDeleted ? 
         <tr>    
             <td>
@@ -34,7 +36,10 @@ export const User = (props: UserProps) => {
                 <Link to={`/users/${props.id}`}><p>Редактировать</p></Link> 
             </td>
             <td>
-                <Link to={`/contracts/${props.id}`}>Оформить договор</Link>
+                <Link to={`/depositForm/${props.id}`}>Оформить депозит</Link>
+            </td>
+            <td>
+                <Link to={`/creditForm/${props.id}`}>Оформить кредит</Link>
             </td>
             <td>
                 <button className='delete-button' onClick={onDelete}>Удалить</button>

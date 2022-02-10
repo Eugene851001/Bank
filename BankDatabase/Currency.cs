@@ -10,6 +10,7 @@ namespace BankDatabase
         public Currency()
         {
             Accounts = new HashSet<Account>();
+            CreditPlans = new HashSet<CreditPlan>();
             Credits = new HashSet<Credit>();
             Deposits = new HashSet<Deposit>();
             DepositsPlans = new HashSet<DepositsPlan>();
@@ -19,6 +20,7 @@ namespace BankDatabase
         public string Code { get; set; }
 
         public virtual ICollection<Account> Accounts { get; set; }
+        public virtual ICollection<CreditPlan> CreditPlans { get; set; }
         public virtual ICollection<Credit> Credits { get; set; }
         public virtual ICollection<Deposit> Deposits { get; set; }
         public virtual ICollection<DepositsPlan> DepositsPlans { get; set; }

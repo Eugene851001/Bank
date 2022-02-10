@@ -19,9 +19,11 @@ namespace BankDatabase
         public byte? Object { get; set; }
         public decimal? MinValue { get; set; }
         public bool Annuity { get; set; }
+        public byte Currency { get; set; }
 
+        public virtual Currency CurrencyNavigation { get; set; }
         public virtual CreditsName NameNavigation { get; set; }
-        public virtual CreditObject ObjectNavigation { get; set; }
+        public virtual CreditsObject ObjectNavigation { get; set; }
         public virtual ICollection<Credit> Credits { get; set; }
     }
 }

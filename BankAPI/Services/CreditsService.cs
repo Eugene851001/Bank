@@ -21,6 +21,7 @@ namespace BankAPI.Services
         {
             this.db = db;
             this.accountsService = accountsService;
+            this.transactionsService = transactionsService;
         }
 
         public override void CloseBankDay()
@@ -29,12 +30,24 @@ namespace BankAPI.Services
             var currentDate = system.CurrentDate;
 
             var credits = this.db.Credits
-                .Where(credit => credit.StartDate >= currentDate && credit.EndDate <= currentDate)
+                .Where(credit => credit.StartDate <= currentDate && credit.EndDate >= currentDate)
                 .ToArray();
 
             foreach (var credit in credits)
             {
                 AccrualOfInterest(credit);
+
+                if (credit.StartDate != currentDate 
+                    && (currentDate - credit.StartDate).Days % Constants.Intervals.Month == 0)
+                {
+                    PayPercents(credit);
+                    PayMainSum(credit, Constants.Intervals.Month);
+                }
+
+                if (credit.EndDate == currentDate)
+                {
+                    CloseCredit(credit);
+                }
             }
         }
 
@@ -68,10 +81,55 @@ namespace BankAPI.Services
                 .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.DevelopmentFund);
 
             this.transactionsService.CommitTransaction(bankAccount, credit.MainAccountNavigation, credit.Sum);
-
             this.transactionsService.CommitTransaction(credit.MainAccountNavigation, cashRegister, credit.Sum);
-
             this.transactionsService.WithdrawFromCashRegister(credit.Sum);
+        }
+
+        public void PayPercents(Credit credit)
+        {
+            decimal sum = Math.Abs(credit.PercentAccountNavigation.Balance.Value);
+            var cashAccount = this.accountsService.GetCashAccount();
+            var creditAccount = credit.PercentAccountNavigation;
+
+            this.transactionsService.TrunsferToCashRegister(sum);
+            this.transactionsService.CommitTransaction(cashAccount, creditAccount, sum);
+        }
+
+        private void PayMainSum(Credit credit, int interval)
+        {
+            decimal sum = credit.Sum * interval / (credit.EndDate - credit.StartDate).Days;
+            var cashAccount = this.accountsService.GetCashAccount();
+            var mainAccount = credit.MainAccountNavigation;
+
+            this.transactionsService.TrunsferToCashRegister(sum);
+            this.transactionsService.CommitTransaction(cashAccount, mainAccount, sum);
+        }
+
+        public void CloseCredit(Credit credit)
+        {
+            var bankAccount = this.accountsService.GetBankAccount();
+            var cashAccount = this.accountsService.GetCashAccount();
+            var mainAccount = credit.MainAccountNavigation;
+            var percentAccount = credit.PercentAccountNavigation;
+
+            decimal mainSum = credit.Sum - mainAccount.Balance.Value;
+            if (mainSum != 0)
+            {
+                this.transactionsService.TrunsferToCashRegister(mainSum);
+                this.transactionsService.CommitTransaction(cashAccount, mainAccount, mainSum);
+            }
+
+            decimal percentSum = Math.Abs(percentAccount.Balance.Value);
+            if (percentSum != 0)
+            {
+                this.transactionsService.TrunsferToCashRegister(percentSum);
+                this.transactionsService.CommitTransaction(cashAccount, percentAccount, percentSum);
+            }
+
+            this.transactionsService.CommitTransaction(mainAccount, bankAccount, credit.Sum);
+
+            credit.Sum = 0;
+            this.db.SaveChanges();
         }
 
         private void AccrualOfInterest(Credit contract)
@@ -81,7 +139,12 @@ namespace BankAPI.Services
 
             if (contract.Annuity)
             {
-                sum += contract.Sum;
+                sum = contract.Sum * (decimal)(contract.Percent / (totalDays * 100));
+            }
+            else
+            {
+                sum = (contract.Sum - contract.MainAccountNavigation.Balance.Value) *
+                    (decimal)(contract.Percent / (totalDays * 100));
             }
 
             var bankAccount = this.db.Accounts

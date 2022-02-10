@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace BankAPI.DTO
 {
-    public class DepositDTO: ContractDTO
+    public class CreditDTO: ContractDTO
     {
-        public bool Revocable { get; set; }
+        public bool Annuity { get; set; }
     }
 }
