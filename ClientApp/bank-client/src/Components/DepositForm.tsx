@@ -12,6 +12,7 @@ import './UserDetailsView.style.css';
 import './ContractsForm.css';
 import { ContractView } from './ContractView';
 import { ContractForm } from './ContractForm';
+import { ErrorDTO } from '../Models/ErrorDTO';
 
 export const DepositForm = () => {
     const { userId } = useParams();
@@ -40,7 +41,8 @@ export const DepositForm = () => {
             if (response.status == 200) {
                 alert('Contract has been added');
             } else {
-                alert('Contract can not be added');
+                const errorInfo: ErrorDTO = await response.json();
+                alert(`Contract can not be added: ${errorInfo.message}`);
             }
         }
     }

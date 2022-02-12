@@ -80,7 +80,14 @@ namespace BankAPI.Controllers
         [HttpPost]
         public ActionResult Add([FromBody] CreateDepositRequest request)
         {
-            _deposistsService.Create(request);
+            try
+            {
+                _deposistsService.Create(request);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(new ErrorDTO() { Message = e.Message });
+            }
 
             return Ok();
         }

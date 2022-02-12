@@ -22,7 +22,15 @@ namespace BankAPI.Controllers
         [HttpPost]
         public ActionResult Add([FromBody] CreateCreditRequest request)
         {
-            creditsService.Create(request);
+            try
+            {
+                creditsService.Create(request);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(new ErrorDTO() { Message = e.Message });
+            }
+
             return Ok();
         }
 
@@ -73,6 +81,7 @@ namespace BankAPI.Controllers
             var report = ReportsService.GenerateCreditReport(credit);
 
             PaymentDTO[] payments = report.Keys.Select(date => new PaymentDTO() { Date = date, Sum = report[date] }).ToArray();
+            ExcelService.GenerateXlsxReport(report);
 
             return Ok(payments);
         }

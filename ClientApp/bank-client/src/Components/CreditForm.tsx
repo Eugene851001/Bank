@@ -14,6 +14,7 @@ import { CreateCreditRequest } from '../Models/CreateCreditRequest';
 import { CreditsService } from '../Services/CreditsService';
 import { CreditPlanDTO } from '../Models/CreditPlanDTO';
 import { CreditPlan } from './CreditPlan';
+import { ErrorDTO } from '../Models/ErrorDTO';
 
 export const CreditForm = () => {
     const { userId } = useParams();
@@ -42,7 +43,8 @@ export const CreditForm = () => {
             if (response.status == 200) {
                 alert('Contract has been added');
             } else {
-                alert('Contract can not be added');
+                const errorInfo: ErrorDTO = await response.json();
+                alert(`Contract can not be added: ${errorInfo.message}`);
             }
         }
     }
@@ -72,7 +74,14 @@ export const CreditForm = () => {
                 <ContractForm user={user} contract={contract} onChange={onChange} onChangeDate={onChangeDate} />
                 <h2>Программы</h2>
                 <table className="plans-table">
-                    <tr><th>Имя</th><th>Аннуитентный</th><th>Срок</th><th>Валюта</th><th>Процент</th><th>Цель</th></tr>
+                    <tr>
+                        <th>Имя</th>
+                        <th>Аннуитентный</th>
+                        <th>Срок</th>
+                        <th>Валюта</th>
+                        <th>Процент</th>
+                        <th>Цель</th>
+                        <th>Мин. сумма</th></tr>
                     {plans ? 
                     plans.map(plan => 
                         <CreditPlan key={plan.id} plan={plan} onSelect={onSelectPlan}/>

@@ -12,22 +12,35 @@ namespace BankAPI.Services
     {
         private readonly IBankContext db;
         private readonly AccountsService accountsService;
+        private readonly SystemService systemService;
 
         private readonly TransactionsService transactionsService;
     
         public DepositsService(
             IBankContext db, 
             TransactionsService transactionsService,
-            AccountsService accountsService)
+            AccountsService accountsService,
+            SystemService systemService)
         {
             this.db = db;
             this.transactionsService = transactionsService;
             this.accountsService = accountsService;
+            this.systemService = systemService;
         }
 
         public void Create(CreateDepositRequest request)
         {
+            if (request.Sum <= 0)
+            {
+                throw new ArgumentException("Sum should be more than zero");
+            }
+
             var plan = this.db.DepositsPlans.Find(request.DepositPlan);
+
+            if (plan.MinValue.HasValue && plan.MinValue.Value > request.Sum)
+            {
+                throw new ArgumentException($"Sum should be from {plan.MinValue.Value}");
+            }
 
             var contract = new Deposit()
             {
@@ -60,8 +73,7 @@ namespace BankAPI.Services
 
         public override void CloseBankDay()
         {
-            var system = this.db.SystemVariables.Find((byte)1);
-            var currentDate = system.CurrentDate;
+            var currentDate = this.systemService.CurrentDate;
 
             var contracts = this.db.Deposits
                 .Where(contract => contract.StartDate <= currentDate
@@ -88,8 +100,7 @@ namespace BankAPI.Services
 
         public void WithdrawPercents(int depositId)
         {
-            var system = this.db.SystemVariables.Find((byte)1);
-            var currentDate = system.CurrentDate;
+            var currentDate = this.systemService.CurrentDate;
 
             var contract = this.db.Deposits.Find(depositId);
 
@@ -116,8 +127,7 @@ namespace BankAPI.Services
 
         public void CloseDeposit(int contractId)
         {
-            var system = this.db.SystemVariables.Find((byte)1);
-            var currentDate = system.CurrentDate;
+            var currentDate = this.systemService.CurrentDate;
 
             var contract = this.db.Deposits.Find(contractId);
 
@@ -141,12 +151,10 @@ namespace BankAPI.Services
 
             var creditAccount = contract.PercentAccountNavigation;
 
-            decimal totalSum = mainAccount.Balance.Value + creditAccount.Balance.Value;
-
             this.transactionsService.CommitTransaction(bankAccount, mainAccount, contract.Sum);
             this.transactionsService.CommitTransaction(mainAccount, cashAccount, mainAccount.Balance.Value);
             this.transactionsService.CommitTransaction(creditAccount, cashAccount, creditAccount.Balance.Value);
-            this.transactionsService.WithdrawFromCashRegister(totalSum);
+            this.transactionsService.WithdrawFromCashRegister(cashAccount.Balance.Value);
 
             contract.Sum = 0;
             this.db.SaveChanges();
@@ -174,6 +182,6 @@ namespace BankAPI.Services
         }
 
         private static decimal GetDayliSum(Deposit contract) =>
-            contract.Sum * (decimal)contract.Percent / ((contract.EndDate - contract.StartDate).Days * 100);
+            contract.Sum * (decimal)contract.Percent / (Constants.Intervals.Year * 100);
     }
 }

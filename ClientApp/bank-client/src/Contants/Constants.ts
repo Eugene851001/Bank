@@ -37,4 +37,14 @@ export const Constants = class {
             }
         }
     }
+
+    public static AccountTypes = class {
+        public static main = 1;
+
+        public static percent = 2;
+
+        public static cash = 3;
+
+        public static bank = 4;
+    }
 }

@@ -29,5 +29,6 @@ export const Users = () => {
             <Link to="/users/create">Добавить пользователя</Link>
             <Link to="/deposits">Депозиты</Link>
             <Link to="/credits">Кредиты</Link>
+            <Link to="/accounts">Счета</Link>
         </div>) : <p>Loading...</p>;
 }

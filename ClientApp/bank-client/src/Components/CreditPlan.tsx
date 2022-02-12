@@ -17,5 +17,6 @@ export const CreditPlan = ({ plan, onSelect }: CreditPlanProps) => {
         <td>{plan.currency}</td>
         <td>{plan.percent}</td>
         <td>{plan.object}</td>
+        <td>{plan.minValue}</td>
     </tr>);
 }

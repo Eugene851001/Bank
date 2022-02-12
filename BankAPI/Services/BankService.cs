@@ -10,15 +10,18 @@ namespace BankAPI.Services
     {
         private readonly DepositsService depositsService;
         private readonly CreditsService creditsService;
+        private readonly SystemService systemService;
         private readonly IBankContext db;
 
         public BankService(
             DepositsService depositsService, 
             CreditsService creditsService,
+            SystemService systemService,
             IBankContext bankContext)
         {
             this.depositsService = depositsService;
             this.creditsService = creditsService;
+            this.systemService = systemService;
             this.db = bankContext;
         }
 
@@ -27,9 +30,8 @@ namespace BankAPI.Services
             this.depositsService.CloseBankDay();
             this.creditsService.CloseBankDay();
 
-            var system = this.db.SystemVariables.Find((byte)1);
-            system.CurrentDate = system.CurrentDate.AddDays(1);
-            this.db.SaveChanges();
+            var date = this.systemService.CurrentDate;
+            this.systemService.SaveCurrentDate(date.AddDays(1));
         }
     }
 }

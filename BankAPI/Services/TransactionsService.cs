@@ -10,10 +10,12 @@ namespace BankAPI.Services
     public class TransactionsService
     {
         private readonly IBankContext db;
+        private readonly SystemService systemService;
 
-        public TransactionsService(IBankContext db)
+        public TransactionsService(IBankContext db, SystemService systemService)
         {
             this.db = db;
+            this.systemService = systemService;
         }
 
         public void CommitTransaction(Account source, Account destination, decimal sum)
@@ -41,7 +43,7 @@ namespace BankAPI.Services
                 Source = source.Id,
                 Destination = destination.Id,
                 Sum = sum,
-                Time = DateTime.Now,
+                Time = this.systemService.CurrentDate,
             };
 
             this.db.Transactions.Add(transasction);

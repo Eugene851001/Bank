@@ -16,7 +16,7 @@ namespace BankAPI.Services
             var result = new Dictionary<DateTime, decimal>();
 
             DateTime currentDate = credit.StartDate.AddDays(Constants.Intervals.Month);
-            int totalDays = (credit.EndDate - credit.StartDate).Days;
+            int totalDays = Constants.Intervals.Year;// (credit.EndDate - credit.StartDate).Days;
             decimal mainAccountSum = 0;
 
             while (currentDate <= credit.EndDate)
@@ -62,16 +62,16 @@ namespace BankAPI.Services
         private static Dictionary<DateTime, decimal> GenerateReportWithInterval(int daysInterval, Deposit contract)
         {
             var result = new Dictionary<DateTime, decimal>();
+            int totalDays = (contract.EndDate - contract.StartDate).Days;
 
             if (!contract.Revocable)
             {
-                result.Add(contract.EndDate, contract.Sum + (decimal)contract.Percent * contract.Sum / 100);
+                result.Add(contract.EndDate, contract.Sum + (decimal)contract.Percent * contract.Sum / 100 * totalDays / Constants.Intervals.Year);
                 return result;
             }
 
-            int totalDays = (contract.EndDate - contract.StartDate).Days;
             int totalIntervals = totalDays / daysInterval;
-            decimal intervalPayment = contract.Sum * ((decimal)contract.Percent / 100) * daysInterval / totalDays;
+            decimal intervalPayment = contract.Sum * ((decimal)contract.Percent / 100) * daysInterval / Constants.Intervals.Year;
             for (int i = 1; i <= totalIntervals; i++)
             {
                 result.Add(contract.StartDate.AddDays(daysInterval *  i), intervalPayment);
@@ -85,7 +85,7 @@ namespace BankAPI.Services
                 return result;
             }
 
-            decimal lastPayment = contract.Sum * (decimal)contract.Percent / 100 / remainDays + contract.Sum;
+            decimal lastPayment = contract.Sum * (decimal)contract.Percent / 100 * remainDays / Constants.Intervals.Year + contract.Sum;
 
             result.Add(contract.EndDate, lastPayment);
 

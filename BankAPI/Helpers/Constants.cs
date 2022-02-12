@@ -30,6 +30,8 @@ namespace BankAPI.Helpers
         public static class Intervals
         {
             public static int Month = 30;
+
+            public static int Year = 12 * 30;
         }
 
     }

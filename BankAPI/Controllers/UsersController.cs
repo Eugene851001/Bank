@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BankDatabase;
 using BankAPI.Mappings;
+using BankAPI.Helpers;
 
 namespace BankAPI.Controllers
 {
@@ -21,6 +22,7 @@ namespace BankAPI.Controllers
         public IActionResult GetUsers()
         {
             UserDemo[] users = this.db.Users
+                .Where(u => !u.Deleted)
                 .OrderBy(u => u.Lastname)
                 .Select(u => this.mapper.Map<UserDemo>(u))
                 .ToArray();
@@ -34,7 +36,7 @@ namespace BankAPI.Controllers
         {
             User user = GetById(id);
 
-            if (user is null)
+            if (user is null || user.Deleted)
             {
                 return NotFound();
             }
@@ -85,7 +87,14 @@ namespace BankAPI.Controllers
         {
             var user = GetById(id);
 
-            this.db.Users.Remove(user);
+            if (user.Accounts.Any(ac => ac.Active == Constants.Accounts.Active 
+                && ac.CreditMainAccountNavigations.First().Sum != 0))
+            {
+                return BadRequest("Can not delete user with open credits");
+            }
+
+            user.Deleted = true;
+
             this.db.SaveChanges();
 
             return Ok();

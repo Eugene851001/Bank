@@ -14,9 +14,14 @@ export const User = (props: UserProps) => {
     const [isDeleted, setIsDeleted] = useState(false);
 
     const onDelete = async () => {
-        await UsersService.DeleteUser(props.id);
+        const response = await UsersService.DeleteUser(props.id);
         
-        setIsDeleted(true);
+        if (response.status == 200) {
+            setIsDeleted(true);
+        } else {
+            alert('User can not be deleted');
+        }
+
     }
 
     const constracts =  (userId: number) => ``;

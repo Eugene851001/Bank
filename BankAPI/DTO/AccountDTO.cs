@@ -16,5 +16,7 @@ namespace BankAPI.DTO
         public int? Owner { get; set; }
 
         public int AccountType { get; set; }
+
+        public int Active { get; set; }
     }
 }

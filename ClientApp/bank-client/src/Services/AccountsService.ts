@@ -1,8 +1,9 @@
+import { AccountDTO } from "../Models/AccountDTO";
 import { CloseDayRequest } from "../Models/CloseDayRequest";
 
 export const AccountsService = class {
     
-    public static getAccounts() {
+    public static getAccounts(): Promise<AccountDTO[]> {
         return fetch('/api/accounts').then(response => response.json());
     }
 

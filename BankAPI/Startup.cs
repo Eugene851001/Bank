@@ -52,6 +52,7 @@ namespace BankAPI
             services.AddScoped<DepositsService>();
             services.AddScoped<CreditsService>();
             services.AddScoped<BankService>();
+            services.AddScoped<SystemService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

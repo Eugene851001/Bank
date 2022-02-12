@@ -1,6 +1,7 @@
 ﻿using BankAPI.DTO;
 using BankAPI.DTO.Requests;
 using BankAPI.Helpers;
+using BankAPI.Services;
 using BankDatabase;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,8 +13,12 @@ namespace BankAPI.Controllers
 {
     public class AccountsController: ApiControllerBase
     {
+        private readonly AccountsService accountsService;
 
-        public AccountsController(IBankContext db): base(db) { }
+        public AccountsController(IBankContext db, AccountsService accountsService): base(db) 
+        {
+            this.accountsService = accountsService;
+        }
 
         [HttpGet]
         public ActionResult GetAll()

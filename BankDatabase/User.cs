@@ -35,6 +35,7 @@ namespace BankDatabase
         public bool IsRetiree { get; set; }
         public decimal? MonthlyIncome { get; set; }
         public bool IsConscripted { get; set; }
+        public bool Deleted { get; set; }
 
         public virtual Country CitizenshipNavigation { get; set; }
         public virtual Disability DisabilityNavigation { get; set; }

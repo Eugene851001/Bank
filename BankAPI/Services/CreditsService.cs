@@ -13,21 +13,23 @@ namespace BankAPI.Services
         private readonly AccountsService accountsService;
         private readonly IBankContext db;
         private readonly TransactionsService transactionsService;
+        private readonly SystemService systemService;
 
         public CreditsService(
             IBankContext db, 
             AccountsService accountsService,
-            TransactionsService transactionsService)
+            TransactionsService transactionsService,
+            SystemService systemService)
         {
             this.db = db;
             this.accountsService = accountsService;
             this.transactionsService = transactionsService;
+            this.systemService = systemService;
         }
 
         public override void CloseBankDay()
         {
-            var system = this.db.SystemVariables.Find((byte)1);
-            var currentDate = system.CurrentDate;
+            var currentDate = this.systemService.CurrentDate;
 
             var credits = this.db.Credits
                 .Where(credit => credit.StartDate <= currentDate && credit.EndDate >= currentDate)
@@ -54,6 +56,16 @@ namespace BankAPI.Services
         public void Create(CreateCreditRequest request)
         {
             CreditPlan plan = this.db.CreditPlans.Find(request.CreditPlan);
+
+            if (request.Sum <= 0)
+            {
+                throw new ArgumentException("Sum should be more than zero");
+            }
+
+            if (plan.MinValue.HasValue && plan.MinValue.Value > request.Sum)
+            {
+                throw new ArgumentException($"Sum should be from {plan.MinValue.Value}");
+            }
 
             var credit = new Credit()
             {
@@ -134,7 +146,7 @@ namespace BankAPI.Services
 
         private void AccrualOfInterest(Credit contract)
         {
-            int totalDays = (contract.EndDate - contract.StartDate).Days;
+            int totalDays = Constants.Intervals.Year;// (contract.EndDate - contract.StartDate).Days;
             decimal sum = contract.Sum * (decimal)(contract.Percent / (totalDays * 100));
 
             if (contract.Annuity)
