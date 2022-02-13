@@ -49,11 +49,8 @@ namespace BankAPI.Controllers
         [HttpPut]
         public IActionResult UpdateUser([FromBody] UpdateUserRequest request)
         {
-            var newUser = this.mapper.Map<User>(request.Value);
+            var newUser = request.Value;
             User user = GetById(request.Id);
-            
-            //primary key should not change
-            newUser.Id = user.Id;
 
             if (this.db.Users.Any(u => u.PassportNumber == newUser.PassportNumber && u.Id != request.Id))
             {
@@ -71,9 +68,10 @@ namespace BankAPI.Controllers
                 });
             }
 
-            foreach (var property in user.GetType().GetProperties())
+            foreach (var property in newUser.GetType().GetProperties())
             {
-                property.SetValue(user, property.GetValue(newUser));
+                object value = property.GetValue(newUser);
+                user.GetType().GetProperty(property.Name).SetValue(user, value);
             }
 
             this.db.SaveChanges();
