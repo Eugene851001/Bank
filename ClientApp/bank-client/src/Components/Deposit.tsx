@@ -97,7 +97,7 @@ export const Deposit = () => {
                     <ContractView user={user} contract={deposit} accounts={accounts} report={report} onCloseDay={loadData}/>
                     <div className="deposit-buttons">
                         <button onClick={(e => onCloseDeposit(e))}>Закрыть депозит</button>
-                        <button onClick={onGenerateReport}>Сгенерировать отчёт</button>
+                        <button onClick={onGenerateReport}>Сгенерировать график</button>
                     </div>
                 </div>  
             </div>

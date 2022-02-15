@@ -60,7 +60,7 @@ export const Credit = () => {
                 <div>
                     <ContractView user={user} contract={credit} accounts={accounts} report={report} onCloseDay={loadData}/>
                     <div className="deposit-buttons">
-                        <button onClick={onGenerateReport}>Сгенерировать отчёт</button>
+                        <button onClick={onGenerateReport}>Сгенерировать график</button>
                     </div>
                 </div>  
             </div>
