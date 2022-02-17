@@ -18,5 +18,9 @@ namespace BankAPI.DTO
         public int AccountType { get; set; }
 
         public int Active { get; set; }
+
+        public decimal Debit { get; set; }
+
+        public decimal Credit { get; set; }
     }
 }

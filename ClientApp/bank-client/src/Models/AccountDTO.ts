@@ -5,4 +5,6 @@ export interface AccountDTO {
     number: string;
     owner: number;
     active: number;
+    debit: number;
+    credit: number;
 }
