@@ -51,7 +51,7 @@ INSERT INTO CreditPlans ([Duration], [Percent], [Name], [Object], [MinValue], [C
 
 INSERT INTO SystemVariables ([CurrentDate]) VALUES ('07-02-2022')
 
-UPDATE SystemVariables SET CurrentDate='02-07-2022'
+UPDATE SystemVariables SET CurrentDate='02-16-2022'
 
 SELECT * FROM SystemVariables;
 
@@ -88,3 +88,5 @@ DELETE FROM Transactions;
 SELECT * FROM Users;
 
 UPDATE Users SET Deleted=0
+
+SELECT * FROM Transactions JOIN Accounts ON Transactions.Source 

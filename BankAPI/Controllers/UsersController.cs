@@ -98,7 +98,6 @@ namespace BankAPI.Controllers
             return Ok();
         }
 
-
         [HttpPost]
         public IActionResult CreateUser([FromBody] UserDTO user)
         {
