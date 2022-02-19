@@ -9,12 +9,13 @@ namespace BankDatabase
     {
         public DbSet<Account> Accounts { get; set; }
         public DbSet<AccountsType> AccountsTypes { get; set; }
+        public DbSet<Card> Cards { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Credit> Credits { get; set; }
-        public DbSet<CreditsObject> CreditsObjects { get; set; }
         public DbSet<CreditPlan> CreditPlans { get; set; }
         public DbSet<CreditsName> CreditsNames { get; set; }
+        public DbSet<CreditsObject> CreditsObjects { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<Deposit> Deposits { get; set; }
         public DbSet<DepositsName> DepositsNames { get; set; }

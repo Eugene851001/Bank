@@ -51,7 +51,19 @@ INSERT INTO CreditPlans ([Duration], [Percent], [Name], [Object], [MinValue], [C
 
 INSERT INTO SystemVariables ([CurrentDate]) VALUES ('07-02-2022')
 
-UPDATE SystemVariables SET CurrentDate='02-16-2022'
+--FOR ATM--
+INSERT INTO Accounts ([Number], [Code], [Active], [Debit], [Credit], [Owner], [AccountType], [Currency]) VALUES
+('2400123456789', '1234', 1, 0, 0, NULL, 2, 1),
+('2400987654321', '1234', 1, 1000, 0, NULL, 2, 1)
+
+INSERT INTO Cards ([Number], [Pin], [Account]) VALUES
+('0000111122223333', '1223', (SELECT TOP 1 [Id] FROM Accounts WHERE [Accounts].Number='2400123456789')),
+('1111222233334444', '1334', (SELECT TOP 1 [Id] FROM Accounts WHERE [Accounts].Number='2400987654321'))
+
+UPDATE Accounts SET [Debit] = 128 WHERE Accounts.Number='2400123456789'
+----
+
+UPDATE SystemVariables SET CurrentDate='02-18-2022'
 
 SELECT * FROM SystemVariables;
 
@@ -82,6 +94,8 @@ DELETE FROM Deposits;
 DELETE FROM Credits;
 
 DELETE FROM Accounts;
+
+DELETE FROM Cards;
 
 DELETE FROM Transactions;
 

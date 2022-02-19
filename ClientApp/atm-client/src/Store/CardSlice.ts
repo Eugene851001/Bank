@@ -26,36 +26,32 @@ export const CardSlice = createSlice({
         setCardData: (state, action: PayloadAction<CardData>) => {
             state.card = action.payload;
         },
-        login: (state) => {
-            const { number, pin } = state.card;
-
-            if (state.loginAttemp == 3) {
-                state.errorMessage = 'Your have no more attemps for login, please restart';
-            }
-            
-            async function makeLoginRequest(number: string, pin: string) {
-                const reponse = await CardService.login({ number, pin });
-                if (reponse.status == 200) {
-                    state.loginSuccess = true;
-                } else {
-                    state.errorMessage = 'Incorrect card number or pin';
-                    state.loginAttemp++;
-                }
-            }
-
-            if (pin) {
-               makeLoginRequest(number, pin);
-            } else {
-                state.errorMessage = 'Please, enter the pin'
-            }
+        setCardNumber: (state, action: PayloadAction<string>) => {
+            state.card.number = action.payload;
         },
-        restart: (state) => {
-            state.loginAttemp = 0;
+        setCardPin: (state, action: PayloadAction<string | undefined>) => {
+            state.card.pin = action.payload;
+        },
+        setError: (state, action: PayloadAction<string>) => {
+            state.errorMessage = action.payload;
+            state.loginSuccess = false;
+        },
+        setSuccess: (state) => {
+            state.loginSuccess = true;
+        },
+        setLoginAttemp: (state, action: PayloadAction<number>) => {
+            state.loginAttemp = action.payload;
+        },  
+        resetCard: (state) => {
+            state.card = initialState.card;
+            state.errorMessage = initialState.errorMessage;
+            state.loginAttemp = initialState.loginAttemp;
+            state.loginSuccess = initialState.loginSuccess;
         }
     }
 })
 
-export const { setCardData, login, restart } = CardSlice.actions;
+export const { setCardData, setError, setSuccess, resetCard, setLoginAttemp, setCardNumber, setCardPin } = CardSlice.actions;
 
 export const CardReducer = CardSlice.reducer;
 

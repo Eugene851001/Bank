@@ -149,7 +149,10 @@ namespace BankAPI.Services
             }
             else
             {
-                sum = (contract.Sum - contract.MainAccountNavigation.Balance.Value) *
+                int interval = (this.systemService.CurrentDate - contract.StartDate).Days
+                        / Constants.Intervals.Month * Constants.Intervals.Month; 
+                decimal paidSum = contract.Sum * interval / (contract.EndDate - contract.StartDate).Days;
+                sum = (contract.Sum - paidSum) *
                     (decimal)(contract.Percent / (totalDays * 100));
             }
 

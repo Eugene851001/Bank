@@ -23,6 +23,12 @@ export const Account = (props: AccountProps) => {
             {props.balance}
         </td>
         <td>
+            {props.debit}
+        </td>
+        <td>
+            {props.credit}
+        </td>
+        <td>
             {typeToName.get(props.accountType)}
         </td>
     </tr>);
