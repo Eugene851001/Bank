@@ -5,6 +5,7 @@ import { useCardData } from "../Hooks/useCard";
 import { getBalance } from "../Store/Actions/AccountActions";
 import { PrintReceiptButton } from "./PrintReceiptButton";
 import { ReturnButton } from "./ReturnButton";
+import './General.css';
 
 export const Balance = () => {
 
@@ -16,9 +17,11 @@ export const Balance = () => {
     }, []);
 
     return balance !== undefined ? (
-        <>
+        <div className="vertical-container">
             <p>Current balance: {balance}</p>
-            <ReturnButton />
-            <PrintReceiptButton operation="Watch balance" sum={balance || 0} date={new Date()}/>
-        </> ) : <p>Loading...</p>;
+            <div className="horizontal-container">
+                <ReturnButton />
+                <PrintReceiptButton operation="Watch balance" sum={balance || 0} date={new Date()}/>
+            </div>
+        </div> ) : <p>Loading...</p>;
 }

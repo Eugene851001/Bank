@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface IAccountState {
     balance?: number;
     withdrawSuccess: boolean;
+    withdrawSum?: number;
     paymentSuccess: boolean;
     destinationAccount?: string;
     transferSum?: number;
@@ -23,6 +24,9 @@ const AccountSlice = createSlice({
         setWithdrawSucess: (state, action: PayloadAction<boolean>) => {
             state.withdrawSuccess = action.payload;
         },
+        setWithdrawSum: (state, action: PayloadAction<number | undefined>) => {
+            state.withdrawSum = action.payload;
+        },
         setPaymentSuccess: (state, action: PayloadAction<boolean>) => {
             state.paymentSuccess = action.payload;
         },
@@ -40,6 +44,14 @@ const AccountSlice = createSlice({
     }
 });
 
-export const { setBalance, setWithdrawSucess, setPaymentSuccess, setDestinationAcount, setTransferSum, resetAccount } = AccountSlice.actions;
+export const { 
+    setBalance, 
+    setWithdrawSucess, 
+    setWithdrawSum, 
+    setPaymentSuccess, 
+    setDestinationAcount, 
+    setTransferSum, 
+    resetAccount 
+} = AccountSlice.actions;
 
 export const AccountReducer = AccountSlice.reducer;

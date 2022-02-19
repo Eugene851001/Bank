@@ -3,6 +3,7 @@ import { useAppDispatch } from '../Hooks';
 import { resetAccount } from '../Store/AccountSlice';
 import { resetCard } from '../Store/CardSlice';
 import { PagesId, resetNavigation, setCurrentPage } from '../Store/NavigationSlice';
+import './Menu.css';
 
 export const Menu = () => {
 
@@ -34,10 +35,10 @@ export const Menu = () => {
         dispatch(resetNavigation());
     }
 
-    return <>
-        <button onClick={onBalanceClick }>Balance</button>
-        <button onClick={onWithdrawClick}>Withdraw</button>
-        <button onClick={onPaymentsClick}>Payments</button>
-        <button onClick={onCloseClick}>Close</button>
-    </>
+    return <div className='buttons-container'>
+        <button className='menu-button' onClick={onBalanceClick }>Balance</button>
+        <button className='menu-button' onClick={onWithdrawClick}>Withdraw</button>
+        <button className='menu-button' onClick={onPaymentsClick}>Payments</button>
+        <button className='menu-button' onClick={onCloseClick}>Close</button>
+    </div>
 }

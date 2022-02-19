@@ -6,6 +6,7 @@ import { transferMoney } from '../Store/Actions/AccountActions';
 import { PagesId, setCurrentPage } from '../Store/NavigationSlice';
 import { PrintReceiptButton } from './PrintReceiptButton';
 import { ReturnButton } from './ReturnButton';
+import './General.css';
 
 export const Payment = () => {
     const { currentPage } = useNavigation();
@@ -40,24 +41,24 @@ export const Payment = () => {
     return (
         <>
             {currentPage.phase == 0 && <>
-                <form>
+                <form className='flex-container'>
                     <p>Destination account</p>
                     <input type="number" onChange={onChangeDestination} />
                     <button onClick={onSubmitDestination}>Submit</button>
                 </form>
             </>}
             {currentPage.phase == 1 && <>
-                <form>
+                <form className='flex-container'>
                     <p>Sum</p>
                     <input type="number" onChange={onChangeSum}/>
                     <button onClick={onSubmitSum}>Submit</button>
                 </form>
             </>}
-            {currentPage.phase == 2 && <>
+            {currentPage.phase == 2 && <div className='flex-container'>
                 <p>Operation has been performed</p>
                 <ReturnButton />
                 <PrintReceiptButton operation='Transfer' sum={+sum} date={new Date()}/>
-            </>
+            </div>
             }
         </>);
 }

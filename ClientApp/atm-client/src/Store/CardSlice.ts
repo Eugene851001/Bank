@@ -36,8 +36,8 @@ export const CardSlice = createSlice({
             state.errorMessage = action.payload;
             state.loginSuccess = false;
         },
-        setSuccess: (state) => {
-            state.loginSuccess = true;
+        setSuccess: (state, action: PayloadAction<boolean>) => {
+            state.loginSuccess = action.payload;
         },
         setLoginAttemp: (state, action: PayloadAction<number>) => {
             state.loginAttemp = action.payload;

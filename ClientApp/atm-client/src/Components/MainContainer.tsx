@@ -9,6 +9,7 @@ import { Menu } from "./Menu";
 import { Payment } from "./Payment";
 import { ReceiptContainer } from "./ReceiptContainer";
 import { Withdraw } from "./Withdraw";
+import './MainContainer.css';
 
 export const MainContainer = () => {
 
@@ -28,13 +29,15 @@ export const MainContainer = () => {
 
     return (<div className="main">
         <h1>ATM</h1>
-        {currentPage.id != PagesId.Logination && 
-            currentPage.id != PagesId.Menu && <button onClick={onMenuClick}>Menu</button>}
-        {currentPage.id == PagesId.Logination && <Logination />}
-        {currentPage.id == PagesId.Menu && <Menu />}
-        {currentPage.id == PagesId.Balance && <WithPinBalance nextPage={{id: PagesId.Balance, phase: 0}}/>}
-        {currentPage.id == PagesId.Payments && <WithPinPayment nextPage={{id: PagesId.Payments, phase: 0}}/>}
-        {currentPage.id == PagesId.Withdraw && <WithPinWithdraw nextPage={{id: PagesId.Withdraw, phase: 0}} />}
+        <div className="display">
+            {currentPage.id != PagesId.Logination && 
+                currentPage.id != PagesId.Menu && <button onClick={onMenuClick}>Menu</button>}
+            {currentPage.id == PagesId.Logination && <Logination />}
+            {currentPage.id == PagesId.Menu && <Menu />}
+            {currentPage.id == PagesId.Balance && <WithPinBalance nextPage={{id: PagesId.Balance, phase: 0}}/>}
+            {currentPage.id == PagesId.Payments && <WithPinPayment nextPage={{id: PagesId.Payments, phase: 0}}/>}
+            {currentPage.id == PagesId.Withdraw && <WithPinWithdraw nextPage={{id: PagesId.Withdraw, phase: 0}} />}
+        </div>
         <div className='receiptContainer'>
             <ReceiptContainer />
         </div>

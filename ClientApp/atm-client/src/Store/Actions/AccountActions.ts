@@ -16,12 +16,12 @@ export function getBalance(): AppThunk {
     }
 }
 
-export function withdrawMoney(sum: number): AppThunk {
+export function withdrawMoney(): AppThunk {
     return async(dispatch, getState) => {
         
-        const { card } = getState();
+        const { card, account } = getState();
 
-        const response = await CardService.withdrawMoney({ number: card.card.number, sum });
+        const response = await CardService.withdrawMoney({ number: card.card.number, sum: account.withdrawSum || 0 });
         
         if (response.status == 200) {
             dispatch(setCurrentPage({id: PagesId.Withdraw, phase: 1}));

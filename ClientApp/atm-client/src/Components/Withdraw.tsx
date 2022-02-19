@@ -2,17 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch } from "../Hooks";
 import { useAccount } from "../Hooks/useAccount";
 import { useNavigation } from "../Hooks/useNavigation";
-import { setWithdrawSucess } from "../Store/AccountSlice";
+import { setWithdrawSucess, setWithdrawSum } from "../Store/AccountSlice";
 import { withdrawMoney } from "../Store/Actions/AccountActions";
 import { setCardPin } from "../Store/CardSlice";
 import { PagesId, setCurrentPage } from "../Store/NavigationSlice";
 import { PrintReceiptButton } from "./PrintReceiptButton";
 import { ReturnButton } from "./ReturnButton";
+import './General.css';
 
 export const Withdraw = () => {
 
     const [sum, setSum] = useState();
 
+    const { withdrawSum } = useAccount();
     const dispatch = useAppDispatch();
 
     const { currentPage } = useNavigation();
@@ -27,7 +29,8 @@ export const Withdraw = () => {
         e.preventDefault();
 
         if (sum) {
-            dispatch(withdrawMoney(sum));
+            dispatch(setWithdrawSum(sum));
+            dispatch(withdrawMoney());
         }
     }   
 
@@ -35,18 +38,21 @@ export const Withdraw = () => {
         <>
             {
                 phase == 0 && 
-                    <form>
+                    <form className="vertical-container">
+                        <p>Sum</p>
                         <input type="number" value={sum} onChange={onEnterSum}/>
-                        <button onClick={onSubmit}>Withdraw</button>
+                        <button className="submit-button" onClick={onSubmit}>Withdraw</button>
                     </form>
             }
             {
                 phase == 1 && 
-                    <>
+                    <div className="vertical-container">
                         <p>Money has been withdrawed</p>
-                        <ReturnButton />
-                        {sum && <PrintReceiptButton operation="Withdraw" sum={sum} date={new Date()}/>}
-                    </>
+                        <div className="horizontal-container">
+                            <ReturnButton />
+                            {<PrintReceiptButton operation="Withdraw" sum={withdrawSum || 0} date={new Date()}/>}
+                        </div>
+                    </div>
             }
         </>);
 }

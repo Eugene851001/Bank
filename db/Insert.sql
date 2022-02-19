@@ -60,8 +60,10 @@ INSERT INTO Cards ([Number], [Pin], [Account]) VALUES
 ('0000111122223333', '1223', (SELECT TOP 1 [Id] FROM Accounts WHERE [Accounts].Number='2400123456789')),
 ('1111222233334444', '1334', (SELECT TOP 1 [Id] FROM Accounts WHERE [Accounts].Number='2400987654321'))
 
-UPDATE Accounts SET [Debit] = 128 WHERE Accounts.Number='2400123456789'
+UPDATE Accounts SET [Debit] = 128 WHERE Accounts.Number='c'
 ----
+
+SELECT * FROM Cards
 
 UPDATE SystemVariables SET CurrentDate='02-18-2022'
 

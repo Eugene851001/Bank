@@ -21,7 +21,7 @@ export function login(nextPage: Page): AppThunk  {
         async function makeLoginRequest(number: string, pin: string) {
             const reponse = await CardService.login({ number, pin });
             if (reponse.status == 200) {
-                dispatch(setSuccess());
+                dispatch(setSuccess(true));
                 dispatch(setLoginAttemp(0));
                 dispatch(setCurrentPage(nextPage));
             } else {

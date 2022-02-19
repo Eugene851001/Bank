@@ -1,5 +1,6 @@
 import React from "react";
 import { useReceiptData } from "../Hooks/useReceipt";
+import './Receipt.css';
 
 export const Receipt = () => {
 
@@ -11,7 +12,7 @@ export const Receipt = () => {
 
     const { operation, sum, date } = data;
 
-    return (<>
+    return (<div className="receipt">
         <p>BNB Bank</p>
         <p>--------</p>
         <p>Operation: {operation}</p>
@@ -19,5 +20,5 @@ export const Receipt = () => {
         <p>Date: {date.toISOString()}</p>
         <p>--------</p>
         <p>Thanks for using bankomat</p>
-    </>);
+    </div>);
 }

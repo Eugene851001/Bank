@@ -4,6 +4,7 @@ import { useLoginStatus } from '../Hooks/useCard';
 import { login } from '../Store/Actions/CardActions';
 import { setCardData, setCardPin, setLoginAttemp } from '../Store/CardSlice';
 import { Page } from '../Store/NavigationSlice';
+import './PinField.css';
 
 export interface PinFieldProps {
     nextPage: Page;
@@ -26,11 +27,11 @@ export const PinField = (props: PinFieldProps) => {
     }
 
     return (
-        <form>
+        <form className='pin-container'>
             <p>Attemps: {attemp}/3</p>
             <p>Please, enter the pin</p>
             <input value={pin} onChange={onChange}/>
-            <button onClick={onSubmit}>Enter</button>
+            <button className='pin-button' onClick={onSubmit}>Enter</button>
         </form>
     );
 }
