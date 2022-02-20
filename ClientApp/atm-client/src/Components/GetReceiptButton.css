@@ -1,0 +1,17 @@
+.get-receipt-button {
+    background-color: #fa2e13;
+    border: none;
+    color: white;
+    padding: 20px 60px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    border-radius: 10%;
+    margin-left:10px;
+    margin-bottom: 10px;
+}
+
+.get-receipt-button:hover {
+    cursor: pointer;
+}

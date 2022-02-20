@@ -12,12 +12,22 @@ export const Receipt = () => {
 
     const { operation, sum, date } = data;
 
+    const dateFormat = (date: Date) => {
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+
+        date.setHours(12);
+
+        return `${date.toISOString().substring(0, 10)} ${hours}:${minutes}:${seconds}`
+    }
+
     return (<div className="receipt">
         <p>BNB Bank</p>
         <p>--------</p>
         <p>Operation: {operation}</p>
         <p>Sum: {sum}</p>
-        <p>Date: {date.toISOString()}</p>
+        <p>Time: {dateFormat(date)}</p>
         <p>--------</p>
         <p>Thanks for using bankomat</p>
     </div>);

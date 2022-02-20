@@ -9,12 +9,13 @@ import { PagesId, setCurrentPage } from "../Store/NavigationSlice";
 import { PrintReceiptButton } from "./PrintReceiptButton";
 import { ReturnButton } from "./ReturnButton";
 import './General.css';
+import { ErrorMessage } from "./ErrorMessage";
 
 export const Withdraw = () => {
 
     const [sum, setSum] = useState();
 
-    const { withdrawSum } = useAccount();
+    const { withdrawSum, withdrawError } = useAccount();
     const dispatch = useAppDispatch();
 
     const { currentPage } = useNavigation();
@@ -53,6 +54,9 @@ export const Withdraw = () => {
                             {<PrintReceiptButton operation="Withdraw" sum={withdrawSum || 0} date={new Date()}/>}
                         </div>
                     </div>
+            }
+            {
+                phase == 2 && <ErrorMessage message={withdrawError || ''}/>
             }
         </>);
 }

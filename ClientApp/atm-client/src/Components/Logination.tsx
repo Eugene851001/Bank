@@ -6,23 +6,17 @@ import { login } from '../Store/Actions/CardActions';
 import { useNavigation } from '../Hooks/useNavigation';
 import { PinField } from './PinField';
 import { PagesId, setCurrentPage } from '../Store/NavigationSlice';
+import './General.css';
 
 export const Logination = () => {
     
     const {number } = useCardData();
-    const { errorMessage, attemp } = useLoginStatus();
     const [cardNumber, setNumber] = useState(number);
 
     const { currentPage } = useNavigation();
     const { phase } = currentPage;
 
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        if (errorMessage) {
-            alert(errorMessage);
-        }
-    }, [errorMessage]);
 
     const onSubmit = (e: any) => {
         e.preventDefault();
@@ -35,10 +29,10 @@ export const Logination = () => {
         <>
             {phase == 0 && 
                 <>
-                    <form>
+                    <form className='vertical-container'>
                         <p>Номер карты</p>
                         <input value={cardNumber} onChange={(e: any) => setNumber(e.target.value)}/>
-                        <button onClick={onSubmit}>Login</button>
+                        <button className='submit-button' onClick={onSubmit}>Login</button>
                     </form>
                 </>
             }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppDispatch } from '../Hooks';
 import { getPrinted, IReceiptData, setReceipt } from '../Store/ReceiptSlice';
-
+import './GetReceiptButton.css'
 
 export const GetReceiptButton = () => {
 
@@ -13,5 +13,5 @@ export const GetReceiptButton = () => {
         dispatch(getPrinted());
     }
 
-    return <button onClick={onPrint}>Get</button>
+    return <button className='get-receipt-button' onClick={onPrint}>Get</button>
 }

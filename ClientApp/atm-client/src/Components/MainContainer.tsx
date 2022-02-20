@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { useAppDispatch } from "../Hooks";
 import { useNavigation } from "../Hooks/useNavigation";
 import { withPin } from "../Hooks/withPin";
@@ -10,12 +10,21 @@ import { Payment } from "./Payment";
 import { ReceiptContainer } from "./ReceiptContainer";
 import { Withdraw } from "./Withdraw";
 import './MainContainer.css';
+import { useLoginStatus } from "../Hooks/useCard";
 
 export const MainContainer = () => {
 
     const { currentPage } = useNavigation();
+    const { errorMessage } = useLoginStatus();
 
     const dispatch = useAppDispatch();
+
+    
+    useEffect(() => {
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+    }, [errorMessage]);
 
     const onMenuClick = (e: any) => {
         e.preventDefault();

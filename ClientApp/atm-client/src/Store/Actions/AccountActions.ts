@@ -1,10 +1,11 @@
 import { GetBalanceResponse } from "../../Models/GetBalanceResponse";
 import { AppThunk } from "../Store";
 import { CardService } from "../../Services/CardService"
-import { setBalance, setPaymentSuccess, setWithdrawSucess } from "../AccountSlice";
+import { setBalance, setPaymentSuccess, setTransferError, setWithdrawError, setWithdrawSucess } from "../AccountSlice";
 import { PagesId, setCurrentPage } from "../NavigationSlice";
 import { setCardPin } from "../CardSlice";
 import { useCardData } from "../../Hooks/useCard";
+import { ErrorDTO } from "../../Models/ErrorDTO";
 
 export function getBalance(): AppThunk {
     return async (dispatch, getState) => {
@@ -27,7 +28,9 @@ export function withdrawMoney(): AppThunk {
             dispatch(setCurrentPage({id: PagesId.Withdraw, phase: 1}));
             dispatch(setWithdrawSucess(true));
         } else {
-            dispatch(setWithdrawSucess(false));
+            const error = await response.json();
+            dispatch(setCurrentPage({id: PagesId.Withdraw, phase: 2}));
+            dispatch(setWithdrawError(error.message));
         }
     }
 }
@@ -48,7 +51,9 @@ export function transferMoney(): AppThunk {
             dispatch(setCurrentPage({id: PagesId.Payments, phase: 2}));
             dispatch(setPaymentSuccess(true));
         } else {
-            dispatch(setPaymentSuccess(false));
+            const error: ErrorDTO = await response.json();
+            dispatch(setCurrentPage({ id: PagesId.Payments, phase: 3 }));
+            dispatch(setTransferError(error.message));
         }   
     }
 }

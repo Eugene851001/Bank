@@ -7,9 +7,12 @@ import { PagesId, setCurrentPage } from '../Store/NavigationSlice';
 import { PrintReceiptButton } from './PrintReceiptButton';
 import { ReturnButton } from './ReturnButton';
 import './General.css';
+import { useAccount } from '../Hooks/useAccount';
+import { ErrorMessage } from './ErrorMessage';
 
 export const Payment = () => {
     const { currentPage } = useNavigation();
+    const { transferSum, transferError } = useAccount();
 
     const [destination, setDestination] = useState('');
     const [sum, setSum] = useState(0);
@@ -34,31 +37,36 @@ export const Payment = () => {
     const onSubmitSum = (e: any) => {
         e.preventDefault();
 
-        dispatch(setTransferSum(sum));
+        dispatch(setTransferSum(+sum));
         dispatch(transferMoney());
     }
 
     return (
         <>
             {currentPage.phase == 0 && <>
-                <form className='flex-container'>
+                <form className='vertical-container'>
                     <p>Destination account</p>
                     <input type="number" onChange={onChangeDestination} />
-                    <button onClick={onSubmitDestination}>Submit</button>
+                    <button className='submit-button' onClick={onSubmitDestination}>Submit</button>
                 </form>
             </>}
             {currentPage.phase == 1 && <>
-                <form className='flex-container'>
+                <form className='vertical-container'>
                     <p>Sum</p>
                     <input type="number" onChange={onChangeSum}/>
-                    <button onClick={onSubmitSum}>Submit</button>
+                    <button className='submit-button' onClick={onSubmitSum}>Submit</button>
                 </form>
             </>}
             {currentPage.phase == 2 && <div className='flex-container'>
                 <p>Operation has been performed</p>
-                <ReturnButton />
-                <PrintReceiptButton operation='Transfer' sum={+sum} date={new Date()}/>
-            </div>
+                <div className='horizontal-container'>
+                </div>
+                    <ReturnButton />
+                    <PrintReceiptButton operation='Transfer' sum={transferSum || 0} date={new Date()}/>
+               </div>
+            }
+            {
+                currentPage.phase == 3 && <ErrorMessage message={transferError || ''}/>
             }
         </>);
 }
