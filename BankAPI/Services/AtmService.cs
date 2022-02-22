@@ -49,6 +49,11 @@ namespace BankAPI.Services
                 throw new ArgumentException($"Account with number {accountNumber} is not found");
             }
 
+            if (destinationAccount.Currency != sourceAccount.Currency)
+            {
+                throw new ArgumentException($"Destination account has another currency");
+            }
+
             if (sourceAccount.Balance < sum)
             {
                 throw new ArgumentException("Not enough money");

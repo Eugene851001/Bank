@@ -4,8 +4,9 @@ import { AppThunk, RootState } from "../Store"
 import { ThunkAction } from "@reduxjs/toolkit"
 import { AnyAction } from "@reduxjs/toolkit"
 import { CardService } from "../../Services/CardService"
-import { setError, setLoginAttemp, setSuccess } from "../CardSlice"
+import { setAccountNumber, setCurrency, setError, setLoginAttemp, setSuccess } from "../CardSlice"
 import { Page, PagesId, setCurrentPage } from "../NavigationSlice"
+import { LoginResponse } from "../../Models/LoginResponse"
 
 export function login(nextPage: Page): AppThunk  {
 
@@ -19,8 +20,11 @@ export function login(nextPage: Page): AppThunk  {
         }
         
         async function makeLoginRequest(number: string, pin: string) {
-            const reponse = await CardService.login({ number, pin });
-            if (reponse.status == 200) {
+            const response = await CardService.login({ number, pin });
+            if (response.status == 200) {
+                const cardInfo: LoginResponse = await response.json();
+                dispatch(setAccountNumber(cardInfo.accountNumber));
+                dispatch(setCurrency(cardInfo.currency));
                 dispatch(setSuccess(true));
                 dispatch(setLoginAttemp(0));
                 dispatch(setCurrentPage(nextPage));

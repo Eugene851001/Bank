@@ -10,12 +10,14 @@ import { PrintReceiptButton } from "./PrintReceiptButton";
 import { ReturnButton } from "./ReturnButton";
 import './General.css';
 import { ErrorMessage } from "./ErrorMessage";
+import { useCardData } from "../Hooks/useCard";
 
 export const Withdraw = () => {
 
     const [sum, setSum] = useState();
 
     const { withdrawSum, withdrawError } = useAccount();
+    const { number: account } = useCardData();
     const dispatch = useAppDispatch();
 
     const { currentPage } = useNavigation();

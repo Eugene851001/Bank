@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace BankAPI.DTO.Responses
 {
-    public class GetBalanceResponse
+    public class AtmLoginResponse
     {
-        public decimal Balance { get; set; }
+        public string AccountNumber { get; set; }
 
         public string Currency { get; set; }
     }

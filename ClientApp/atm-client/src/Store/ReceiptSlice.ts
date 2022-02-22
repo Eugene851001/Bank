@@ -4,6 +4,7 @@ export interface IReceiptData {
     operation: string;
     sum: number;
     date: Date;
+    destinationAccount?: string;
 }
 
 interface IReceiptState {

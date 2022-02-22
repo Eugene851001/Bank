@@ -9,10 +9,12 @@ import { ReturnButton } from './ReturnButton';
 import './General.css';
 import { useAccount } from '../Hooks/useAccount';
 import { ErrorMessage } from './ErrorMessage';
+import { useCardData } from '../Hooks/useCard';
 
 export const Payment = () => {
     const { currentPage } = useNavigation();
-    const { transferSum, transferError } = useAccount();
+    const { transferSum, transferError, destinationAccount } = useAccount();
+    const {number: currentAccount} = useCardData();
 
     const [destination, setDestination] = useState('');
     const [sum, setSum] = useState(0);
@@ -62,7 +64,12 @@ export const Payment = () => {
                 <div className='horizontal-container'>
                 </div>
                     <ReturnButton />
-                    <PrintReceiptButton operation='Transfer' sum={transferSum || 0} date={new Date()}/>
+                    <PrintReceiptButton  
+                        destinationAccount={destinationAccount}
+                        operation='Transfer' 
+                        sum={transferSum || 0} 
+                        date={new Date()}
+                    />
                </div>
             }
             {

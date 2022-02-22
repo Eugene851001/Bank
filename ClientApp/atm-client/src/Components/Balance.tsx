@@ -10,6 +10,7 @@ import './General.css';
 export const Balance = () => {
 
     const { balance } = useAccount();
+    const { accountNumber, currency } = useCardData();
      const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -18,7 +19,8 @@ export const Balance = () => {
 
     return balance !== undefined ? (
         <div className="vertical-container">
-            <p>Current balance: {balance}</p>
+            <p>Account number: {accountNumber}</p>
+            <p>Current balance: {balance} {currency}</p>
             <div className="horizontal-container">
                 <ReturnButton />
                 <PrintReceiptButton operation="Watch balance" sum={balance || 0} date={new Date()}/>

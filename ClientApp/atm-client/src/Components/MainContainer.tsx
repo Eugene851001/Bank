@@ -19,7 +19,6 @@ export const MainContainer = () => {
 
     const dispatch = useAppDispatch();
 
-    
     useEffect(() => {
         if (errorMessage) {
             alert(errorMessage);
@@ -39,8 +38,6 @@ export const MainContainer = () => {
     return (<div className="main">
         <h1>ATM</h1>
         <div className="display">
-            {currentPage.id != PagesId.Logination && 
-                currentPage.id != PagesId.Menu && <button onClick={onMenuClick}>Menu</button>}
             {currentPage.id == PagesId.Logination && <Logination />}
             {currentPage.id == PagesId.Menu && <Menu />}
             {currentPage.id == PagesId.Balance && <WithPinBalance nextPage={{id: PagesId.Balance, phase: 0}}/>}

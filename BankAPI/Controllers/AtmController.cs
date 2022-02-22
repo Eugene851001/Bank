@@ -24,12 +24,16 @@ namespace BankAPI.Controllers
         [HttpPost]
         public ActionResult Login(CardLoginationRequest request)
         {
-            bool cardFound = this.db.Cards
-                .Any(card => card.Number == request.Number && card.Pin == request.Pin);
+            Card card = this.db.Cards
+                .FirstOrDefault(card => card.Number == request.Number && card.Pin == request.Pin);
 
-            if (cardFound)
+            if (card != null)
             {
-                return Ok();
+                return Ok(new AtmLoginResponse() 
+                    { 
+                        AccountNumber = card.AccountNavigation.Number,
+                        Currency = card.AccountNavigation.CurrencyNavigation.Code,
+                    } );
             }
 
             return Unauthorized();

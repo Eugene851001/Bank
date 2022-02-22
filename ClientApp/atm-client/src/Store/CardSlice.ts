@@ -4,6 +4,8 @@ import { CardService } from '../Services/CardService';
 interface CardData {
     number: string;
     pin?: string;
+    accountNumber?: string;
+    currency?: string;
 }
 
 interface CardState {
@@ -32,6 +34,12 @@ export const CardSlice = createSlice({
         setCardPin: (state, action: PayloadAction<string | undefined>) => {
             state.card.pin = action.payload;
         },
+        setAccountNumber: (state, action: PayloadAction<string | undefined>) => {
+            state.card.accountNumber = action.payload;
+        },
+        setCurrency: (state, action: PayloadAction<string | undefined>) => {
+            state.card.currency = action.payload;
+        },
         setError: (state, action: PayloadAction<string>) => {
             state.errorMessage = action.payload;
             state.loginSuccess = false;
@@ -51,7 +59,17 @@ export const CardSlice = createSlice({
     }
 })
 
-export const { setCardData, setError, setSuccess, resetCard, setLoginAttemp, setCardNumber, setCardPin } = CardSlice.actions;
+export const { 
+    setCardData, 
+    setError, 
+    setSuccess, 
+    resetCard, 
+    setLoginAttemp, 
+    setCardNumber, 
+    setCardPin,
+    setAccountNumber,
+    setCurrency,
+ } = CardSlice.actions;
 
 export const CardReducer = CardSlice.reducer;
 
