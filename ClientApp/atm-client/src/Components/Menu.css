@@ -1,0 +1,24 @@
+.buttons-container {
+    margin-top: 200px;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 50px;
+}
+
+.menu-button {
+    background-color: #0833a7;
+    border: none;
+    color: white;
+    padding: 32px 64px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    border-radius: 10%;
+    margin-left:10px;
+    grid-area: 'item';
+}
+
+.menu-button:hover {
+    cursor: pointer;
+}

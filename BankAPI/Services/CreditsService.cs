@@ -107,29 +107,13 @@ namespace BankAPI.Services
             this.transactionsService.CommitTransaction(cashAccount, creditAccount, sum);
         }
 
-        private void PayMainSum(Credit credit, int interval)
-        {
-            decimal sum = credit.Sum * interval / (credit.EndDate - credit.StartDate).Days;
-            var cashAccount = this.accountsService.GetCashAccount();
-            var mainAccount = credit.MainAccountNavigation;
-
-            this.transactionsService.TrunsferToCashRegister(sum);
-            this.transactionsService.CommitTransaction(cashAccount, mainAccount, sum);
-        }
-
         public void CloseCredit(Credit credit)
         {
-            var bankAccount = this.accountsService.GetBankAccount();
-            var cashAccount = this.accountsService.GetCashAccount();
-            var mainAccount = credit.MainAccountNavigation;
-            var percentAccount = credit.PercentAccountNavigation;
+            int daysRemain = (credit.EndDate - systemService.CurrentDate).Days;
+            PayMainSum(credit, daysRemain);
 
-            decimal mainSum = credit.Sum - mainAccount.Balance.Value;
-            if (mainSum != 0)
-            {
-                this.transactionsService.TrunsferToCashRegister(mainSum);
-                this.transactionsService.CommitTransaction(cashAccount, mainAccount, mainSum);
-            }
+            var cashAccount = this.accountsService.GetCashAccount();
+            var percentAccount = credit.PercentAccountNavigation;
 
             decimal percentSum = Math.Abs(percentAccount.Balance.Value);
             if (percentSum != 0)
@@ -138,10 +122,20 @@ namespace BankAPI.Services
                 this.transactionsService.CommitTransaction(cashAccount, percentAccount, percentSum);
             }
 
-            this.transactionsService.CommitTransaction(mainAccount, bankAccount, credit.Sum);
-
             credit.Sum = 0;
             this.db.SaveChanges();
+        }
+
+        private void PayMainSum(Credit credit, int interval)
+        {
+            decimal sum = credit.Sum * interval / (credit.EndDate - credit.StartDate).Days;
+            var cashAccount = this.accountsService.GetCashAccount();
+            var bankAccount = this.accountsService.GetBankAccount();
+            var mainAccount = credit.MainAccountNavigation;
+
+            this.transactionsService.TrunsferToCashRegister(sum);
+            this.transactionsService.CommitTransaction(cashAccount, mainAccount, sum);
+            this.transactionsService.CommitTransaction(mainAccount, bankAccount, sum);
         }
 
         private void AccrualOfInterest(Credit contract)
@@ -155,7 +149,10 @@ namespace BankAPI.Services
             }
             else
             {
-                sum = (contract.Sum - contract.MainAccountNavigation.Balance.Value) *
+                int interval = (this.systemService.CurrentDate - contract.StartDate).Days
+                        / Constants.Intervals.Month * Constants.Intervals.Month; 
+                decimal paidSum = contract.Sum * interval / (contract.EndDate - contract.StartDate).Days;
+                sum = (contract.Sum - paidSum) *
                     (decimal)(contract.Percent / (totalDays * 100));
             }
 

@@ -9,6 +9,7 @@ namespace BankDatabase
     {
         public Account()
         {
+            Cards = new HashSet<Card>();
             CreditMainAccountNavigations = new HashSet<Credit>();
             CreditPercentAccountNavigations = new HashSet<Credit>();
             DepositMainAccountNavigations = new HashSet<Deposit>();
@@ -31,6 +32,7 @@ namespace BankDatabase
         public virtual AccountsType AccountTypeNavigation { get; set; }
         public virtual Currency CurrencyNavigation { get; set; }
         public virtual User OwnerNavigation { get; set; }
+        public virtual ICollection<Card> Cards { get; set; }
         public virtual ICollection<Credit> CreditMainAccountNavigations { get; set; }
         public virtual ICollection<Credit> CreditPercentAccountNavigations { get; set; }
         public virtual ICollection<Deposit> DepositMainAccountNavigations { get; set; }

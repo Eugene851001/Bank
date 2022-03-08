@@ -11,7 +11,8 @@ export const UsersService = class {
     }
 
     public static getUser(id: number): Promise<UserDTO> {
-        return fetch(`/api/Users/${id}`).then(response => response.json());
+        return fetch(`/api/Users/${id}`)
+            .then(response => response.json())
     }
 
     public static addUser(user: UserDTO){

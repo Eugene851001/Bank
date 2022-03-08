@@ -19,6 +19,7 @@ namespace BankDatabase
 
         public virtual DbSet<Account> Accounts { get; set; }
         public virtual DbSet<AccountsType> AccountsTypes { get; set; }
+        public virtual DbSet<Card> Cards { get; set; }
         public virtual DbSet<City> Cities { get; set; }
         public virtual DbSet<Country> Countries { get; set; }
         public virtual DbSet<Credit> Credits { get; set; }
@@ -108,6 +109,30 @@ namespace BankDatabase
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Card>(entity =>
+            {
+                entity.HasKey(e => e.Number);
+
+                entity.HasIndex(e => e.Account, "IXFK_Cards_Accounts");
+
+                entity.Property(e => e.Number)
+                    .HasMaxLength(16)
+                    .IsUnicode(false)
+                    .IsFixedLength(true);
+
+                entity.Property(e => e.Pin)
+                    .IsRequired()
+                    .HasMaxLength(4)
+                    .IsUnicode(false)
+                    .IsFixedLength(true);
+
+                entity.HasOne(d => d.AccountNavigation)
+                    .WithMany(p => p.Cards)
+                    .HasForeignKey(d => d.Account)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Cards_Accounts");
             });
 
             modelBuilder.Entity<City>(entity =>

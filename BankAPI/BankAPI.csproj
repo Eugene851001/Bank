@@ -26,9 +26,5 @@
     <ProjectReference Include="..\BankDatabase\BankDatabase.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTO\Responses\" />
-  </ItemGroup>
-
 
 </Project>

@@ -1,0 +1,20 @@
+.display {
+    border-style: inset;
+    width: 500px;
+    height: 500px;
+    text-align: center;
+}
+
+.receiptContainer {
+    border-style: solid;
+    width: 500px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

@@ -174,11 +174,11 @@ namespace BankAPI.Services
 
         private void WithdrawCashMonthly(Deposit contract)
         {
-            var cashAccount = this.db.Accounts
-                .FirstOrDefault(ac => ac.AccountType == Constants.AccountTypes.CashRegister);
+            var cashAccount = this.accountsService.GetCashAccount();
 
             decimal sum = GetDayliSum(contract) * Constants.Intervals.Month;
             this.transactionsService.CommitTransaction(contract.PercentAccountNavigation, cashAccount, sum);
+            this.transactionsService.WithdrawFromCashRegister(sum);
         }
 
         private static decimal GetDayliSum(Deposit contract) =>
